@@ -6,8 +6,8 @@ class ItemDarkCloud :public Item
 {
 public:
 
-	static ItemDarkCloud* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
+	static ItemDarkCloud* create(ValueMap& map);
+	bool init(ValueMap& map);
 
 
 };

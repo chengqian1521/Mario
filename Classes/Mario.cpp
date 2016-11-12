@@ -1,9 +1,9 @@
 #include "Mario.h"
 #include "Item.h"
-#include "LayerGame.h"
-
+#include "SceneGame.h"
+#include "ItemMushroom.h"
 #include <hash_set>
-Mario * Mario::sm_mario=NULL;
+Mario* Mario::sm_mario = NULL;
 Mario* Mario::getInstance(){
 	if (sm_mario){
 		return sm_mario;
@@ -11,11 +11,11 @@ Mario* Mario::getInstance(){
 	else{
 		sm_mario = new Mario();
 		if (sm_mario&&sm_mario->init()){
-										
+
 		}
 		else{
 			delete sm_mario;
-			sm_mario = NULL;
+			sm_mario = nullptr;
 		}
 
 		return sm_mario;
@@ -24,26 +24,26 @@ Mario* Mario::getInstance(){
 
 bool Mario::init(){
 
-	CCTexture2D* texture = CCTextureCache::sharedTextureCache()->addImage("smallWalkRight.png");
-	CCSpriteFrame* frame = CCSpriteFrame::createWithTexture(texture, CCRectMake(0, 0, texture->getContentSize().width / 11, texture->getContentSize().height));
-	CCSprite::initWithSpriteFrame(frame);
+	Texture2D* texture = TextureCache::getInstance()->addImage("smallWalkRight.png");
+	SpriteFrame* frame = SpriteFrame::createWithTexture(texture, Rect(0, 0, texture->getContentSize().width / 11, texture->getContentSize().height));
+	Sprite::initWithSpriteFrame(frame);
 
 	m_faceDir = Common::RIGHT;//静止时脸的朝向
+	_speedX = 0;	//速度,规定向右为正, 单位:每秒移动多少像素
+	_speedY = 0;	//向上的速度
 
-	m_speedX = 0;	//速度,规定向右为正, 单位:每秒移动多少像素
-	m_speedY = 0;	//向上的速度
-	m_speedAcc = 10;//向下的重力加速度
-	m_speed_const = 100;
-	m_bIsFly = false;
-	m_life = 1;
-	m_canFire = false;
-	m_bIsBig = false;
-	m_bIsGodMode = false;
-	m_bIsDead = false;
-	m_bIsAutoRunning = false;
-	m_bIsOnLadder = false;
+
+	_speed_const = 100;
+	_isFly = false;
+	_life = 3;
+	_canFire = false;
+	_isBig = false;
+	_isGodMode = false;
+	_isDead = false;
+	_isAutoRunning = false;
+	_isOnLadder = false;
 	{
-		
+
 
 		//加载到缓存中
 		CCAnimationCache::sharedAnimationCache()->addAnimation(Common::createAnimation("smallWalkLeft.png",
@@ -52,20 +52,20 @@ bool Mario::init(){
 			0, 10, 14, 0.05f), "smallMoveRightAnimation");
 
 		//马里奥跳的时候要用的帧
-		
+
 
 		CCSpriteFrameCache::sharedSpriteFrameCache()
 			->addSpriteFrame(Common::getSpriteFrame("smallWalkLeft.png", 10, 14),
 			"smallJumpLeft");
 
-		
+
 
 		CCSpriteFrameCache::sharedSpriteFrameCache()->
 			addSpriteFrame(Common::getSpriteFrame("smallWalkRight.png", 10, 14)
 			, "smallJumpRight");
 	}
 	{
-		
+
 		//加载到缓存中
 		CCAnimationCache::sharedAnimationCache()
 			->addAnimation(Common::createAnimation("walkRight.png",
@@ -77,54 +77,47 @@ bool Mario::init(){
 			, "bigMoveLeftAnimation");
 
 		//马里奥跳的时候要用的帧
-		
+
 
 		CCSpriteFrameCache::sharedSpriteFrameCache()
 			->addSpriteFrame(Common::getSpriteFrame("walkLeft.png", 10, 18),
 			"bigJumpLeft");
 
-		
+
 
 		CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFrame(
 			Common::getSpriteFrame("walkRight.png", 10, 18),
 			"bigJumpRight");
 
-	
+
 	}
 	{
 		CCAnimationCache::sharedAnimationCache()
 			->addAnimation(Common::createAnimation("small_die.png",
-			0, 7,16 , 0.05f)
+			0, 7, 16, 0.05f)
 			, "smallDieAnimation");
-	
+
 	}
 	return true;
 }
 
 //更新状态
 void Mario::updateStatus(){
-	this->stopAllActions();
-	if (m_bIsAutoRunning){
-		this->setDisplayFrameWithAnimationName(m_bIsBig ? "bigMoveRightAnimation" : "smallMoveRightAnimation", 0);
-
-
+	if (_isDead){
 		return;
 	}
-	if (m_bIsDead){
-		CCAnimate* animate=CCAnimate::create(CCAnimationCache::sharedAnimationCache()
-						  ->animationByName("smallDieAnimation"));
-		CCMoveBy* moveBy = CCMoveBy::create(winSize.height / 100,
-											ccp(0, -winSize.height));
-		CCCallFunc* callfunc = CCCallFunc::create(this, callfunc_selector(Mario::dieCallback));
 
-		runAction(CCSequence::create(animate, moveBy, callfunc, NULL));
-		return ;
+	this->stopAllActions();
+	if (_isAutoRunning){
+		this->setDisplayFrameWithAnimationName(_isBig ? "bigMoveRightAnimation" : "smallMoveRightAnimation", 0);
+		return;
 	}
-	if (m_bIsFly){
-		if (m_bIsBig){
+	
+	if (_isFly){
+		if (_isBig){
 			this->setDisplayFrame(CCSpriteFrameCache::sharedSpriteFrameCache()
-							  ->spriteFrameByName(m_faceDir == Common::LEFT ?
-							  "bigJumpLeft" : "bigJumpRight"));
+								  ->spriteFrameByName(m_faceDir == Common::LEFT ?
+								  "bigJumpLeft" : "bigJumpRight"));
 		}
 		else{
 			this->setDisplayFrame(CCSpriteFrameCache::sharedSpriteFrameCache()
@@ -134,27 +127,27 @@ void Mario::updateStatus(){
 		return;
 	}
 
-	if (m_speedX < 0){
+	if (_speedX < 0){
 
 		runAction(CCRepeatForever::create(
 			CCAnimate::create(CCAnimationCache::sharedAnimationCache()
-			->animationByName(m_bIsBig?"bigMoveLeftAnimation":"smallMoveLeftAnimation"))));
+			->animationByName(_isBig ? "bigMoveLeftAnimation" : "smallMoveLeftAnimation"))));
 	}
-	else if (m_speedX>0){
+	else if (_speedX>0){
 
 		runAction(CCRepeatForever::create(
 			CCAnimate::create(CCAnimationCache::sharedAnimationCache()
-			->animationByName(m_bIsBig ? "bigMoveRightAnimation":"smallMoveRightAnimation"))));
+			->animationByName(_isBig ? "bigMoveRightAnimation" : "smallMoveRightAnimation"))));
 	}
 	else{
 
 		if (m_faceDir == Common::LEFT){
 
-			this->setDisplayFrameWithAnimationName(m_bIsBig ?"bigMoveLeftAnimation" :"smallMoveLeftAnimation", 0);
+			this->setDisplayFrameWithAnimationName(_isBig ? "bigMoveLeftAnimation" : "smallMoveLeftAnimation", 0);
 		}
 		else {
 
-			this->setDisplayFrameWithAnimationName(m_bIsBig ? "bigMoveRightAnimation" : "smallMoveRightAnimation", 0);
+			this->setDisplayFrameWithAnimationName(_isBig ? "bigMoveRightAnimation" : "smallMoveRightAnimation", 0);
 		}
 
 	}
@@ -162,8 +155,8 @@ void Mario::updateStatus(){
 }
 
 void Mario::stop(){
-	if (m_speedX){
-		m_speedX = 0;
+	if (_speedX){
+		_speedX = 0;
 		updateStatus();
 	}
 }
@@ -171,19 +164,19 @@ void Mario::stop(){
 bool Mario::canMoveDown(float dt){
 	//if (m_bIsOnLadder)
 	//	CCLOG("incanMoveDown m_bISonLadder=%d", m_bIsOnLadder);
-	if (m_bIsDead||m_bIsOnLadder)
+	if (_isDead || _isOnLadder)
 		return false;
-	
-	
+
+
 	CCRect rcMario(boundingBox().origin.x, boundingBox().origin.y,
 				   boundingBox().size.width - 1, boundingBox().size.height - 1);
-	CCPoint ptMario = getPosition();
+	Vec2 ptMario = getPosition();
 
 	CCTMXTiledMap* map = getMap();
-	CCPoint ptMarioWorld = map->convertToWorldSpace(ptMario);
-	CCPoint pts[3];
+	Vec2 ptMarioWorld = map->convertToWorldSpace(ptMario);
+	Vec2 pts[3];
 
-	float minY = rcMario.getMinY() + m_speedY*dt;
+	float minY = rcMario.getMinY() + _speedY*dt;
 	if (rcMario.getMinY() >= map->getContentSize().height){
 		return true;
 	}
@@ -197,14 +190,14 @@ bool Mario::canMoveDown(float dt){
 	pts[2] = ccp(rcMario.getMaxX(), minY);
 
 	for (int i = 0; i < 3; ++i){
-		CCPoint ptTile = Common::pointToMap(map, pts[i]);
+		Vec2 ptTile = Common::pointToMap(map, pts[i]);
 
 		//墙,水管,地板
 		static const char *layerName[] = {
 			"block",
 			"pipe",
 			"land",
-			
+
 		};
 		for (int j = 0; j < sizeof(layerName) / sizeof(*layerName); ++j){
 			CCTMXLayer* layer = map->layerNamed(layerName[j]);
@@ -220,19 +213,19 @@ bool Mario::canMoveDown(float dt){
 }
 
 bool Mario::canMoveUp(float dt){
-	if (m_bIsDead || m_bIsAutoRunning)
+	if (_isDead || _isAutoRunning)
 		return false;
 	CCRect rcMario(boundingBox().origin.x, boundingBox().origin.y,
 				   boundingBox().size.width - 1, boundingBox().size.height - 1);
-	CCPoint ptMario = getPosition();
+	Vec2 ptMario = getPosition();
 
 	CCTMXTiledMap* map = getMap();
-	CCPoint ptMarioWorld = map->convertToWorldSpace(ptMario);
-	CCPoint pts[3];
+	Vec2 ptMarioWorld = map->convertToWorldSpace(ptMario);
+	Vec2 pts[3];
 
 	//向上
 	//判断是否出界
-	float maxY = rcMario.getMaxY() + m_speedY*dt;
+	float maxY = rcMario.getMaxY() + _speedY*dt;
 	if (maxY > map->getContentSize().height)
 		return true;
 
@@ -241,7 +234,7 @@ bool Mario::canMoveUp(float dt){
 	pts[2] = ccp(rcMario.getMaxX(), maxY);
 
 	for (int i = 0; i < 3; ++i){
-		CCPoint ptTile = Common::pointToMap(map, pts[i]);
+		Vec2 ptTile = Common::pointToMap(map, pts[i]);
 
 		//墙,水管,地板
 		static const char *layerName[] = {
@@ -255,7 +248,7 @@ bool Mario::canMoveUp(float dt){
 			if (gid){
 				//有东西挡住了
 
-				hitSomething(layer, gid,ptTile);
+				hitSomething(layer, gid, ptTile);
 
 				return false;
 			}
@@ -267,15 +260,15 @@ bool Mario::canMoveUp(float dt){
 
 
 bool Mario::canMoveHorizontally(float dt){
-	if (m_bIsDead || m_bIsAutoRunning)
+	if (_isDead || _isAutoRunning)
 		return false;
 	CCRect rcMario(boundingBox().origin.x, boundingBox().origin.y,
 				   boundingBox().size.width - 1, boundingBox().size.height - 1);
-	CCPoint ptMario = getPosition();
+	Vec2 ptMario = getPosition();
 
 	CCTMXTiledMap* map = getMap();
-	CCPoint ptMarioWorld = map->convertToWorldSpace(ptMario);
-	CCPoint pts[3];
+	Vec2 ptMarioWorld = map->convertToWorldSpace(ptMario);
+	Vec2 pts[3];
 
 	if (ptMario.y >= map->getContentSize().height){
 		return true;
@@ -283,16 +276,16 @@ bool Mario::canMoveHorizontally(float dt){
 	if (getPositionY() < 0)
 		return true;
 	//判断是否出界
-	if (ptMarioWorld.x + m_speedX*dt <= 0){
+	if (ptMarioWorld.x + _speedX*dt <= 0){
 		return false;
 	}
 
-	float midY = rcMario.getMidY() > map->getContentSize().height-1 ? map->getContentSize().height-1 : rcMario.getMidY();
-	float maxY = rcMario.getMaxY() > map->getContentSize().height -1? map->getContentSize().height-1: rcMario.getMaxY();
+	float midY = rcMario.getMidY() > map->getContentSize().height - 1 ? map->getContentSize().height - 1 : rcMario.getMidY();
+	float maxY = rcMario.getMaxY() > map->getContentSize().height - 1 ? map->getContentSize().height - 1 : rcMario.getMaxY();
 	//CCLOG("midY=%g,maxY=%g", midY, maxY);
-	if (m_speedX < 0){
+	if (_speedX < 0){
 		//向左走
-		float minX = rcMario.getMinX() + m_speedX*dt;
+		float minX = rcMario.getMinX() + _speedX*dt;
 		pts[0] = ccp(minX, midY);
 		pts[1] = ccp(minX, maxY);
 		pts[2] = ccp(minX, rcMario.getMinY());
@@ -300,14 +293,14 @@ bool Mario::canMoveHorizontally(float dt){
 	}
 	else{
 		//向右走
-		float maxX = rcMario.getMaxX() + m_speedX*dt;
+		float maxX = rcMario.getMaxX() + _speedX*dt;
 		pts[0] = ccp(maxX, midY);
 		pts[1] = ccp(maxX, maxY);
 		pts[2] = ccp(maxX, rcMario.getMinY());
 	}
 
 	for (int i = 0; i < 3; ++i){
-		CCPoint ptTile = Common::pointToMap(map, pts[i]);
+		Vec2 ptTile = Common::pointToMap(map, pts[i]);
 
 		//墙,水管,地板
 		static const char *layerName[] = {
@@ -328,22 +321,22 @@ bool Mario::canMoveHorizontally(float dt){
 	return true;
 }
 
-CCTMXTiledMap* Mario::getMap(){
-	return (CCTMXTiledMap*)getParent();
+TMXTiledMap* Mario::getMap(){
+	return (TMXTiledMap*)getParent();
 }
 
 //给马里奥水平方向的速度
 void Mario::moveHorizontal(Common::Direction dir){
-	if (m_bIsDead||m_bIsAutoRunning)
+	if (_isDead || _isAutoRunning)
 		return;
 
-	if (!m_speedX){
+	if (!_speedX){
 
 		if (dir == Common::LEFT){
-			m_speedX = -m_speed_const;
+			_speedX = -_speed_const;
 		}
 		else{
-			m_speedX = m_speed_const;
+			_speedX = _speed_const;
 		}
 
 		m_faceDir = dir;
@@ -354,191 +347,228 @@ void Mario::moveHorizontal(Common::Direction dir){
 }
 
 void Mario::jump(){
-	if (m_bIsDead || m_bIsFly||m_bIsAutoRunning)
+	if (_isDead || _isFly || _isAutoRunning)
 		return;
-	
-	m_speedY = 300;
-	m_bIsFly = true;
+
+	_speedY = 300;
+	_isFly = true;
 
 	updateStatus();
 
 }
 void Mario::jump(int initV){
-	if (m_bIsDead)
+	if (_isDead)
 		return;
-	m_speedY = initV;
-	m_bIsFly = true;
+	_speedY = initV;
+	_isFly = true;
 
 	updateStatus();
 }
 
 void Mario::moveVerticalCheck(float dt){
-	
-		//判断是否可以自由落体
-		if (!m_bIsFly){
-			m_speedY -= m_speedAcc;
-			if (canMoveDown(dt)){
-				//没有东西挡住,自由下落
-				this->setPositionY(getPositionY() + dt*m_speedY);
-				m_bIsFly = true;
 
-			}
-			else{
-				m_bIsFly = false;
-				m_speedY = 0;
-			}
+	//判断是否可以自由落体
+	if (!_isFly){
+		_speedY -= ARG_GRAVITY;
+		if (canMoveDown(dt)){
+			//没有东西挡住,自由下落
+			this->setPositionY(getPositionY() + dt*_speedY);
+			_isFly = true;
 
-		}
-
-		if (m_speedY > 0){
-			if (canMoveUp(dt)){
-				setPositionY(getPositionY() + dt*m_speedY);
-				m_speedY -= m_speedAcc;
-			}
-			else{
-				//速度反弹
-				m_speedY = -m_speedY;
-			}
-		}
-		else if (m_speedY < 0){
-			if (canMoveDown(dt)){
-				setPositionY(getPositionY() + dt*m_speedY);
-				m_speedY -= m_speedAcc;
-			}
-			else{
-				m_bIsFly = false;
-				m_speedY = 0;
-				updateStatus();
-			}
 		}
 		else{
-			m_speedY -= m_speedAcc;
-
+			_isFly = false;
+			_speedY = 0;
 		}
 
-	
+	}
+
+	if (_speedY > 0){
+		if (canMoveUp(dt)){
+			setPositionY(getPositionY() + dt*_speedY);
+			_speedY -= ARG_GRAVITY;
+		}
+		else{
+			//速度反弹
+			_speedY = -_speedY;
+		}
+	}
+	else if (_speedY < 0){
+		if (canMoveDown(dt)){
+			setPositionY(getPositionY() + dt*_speedY);
+			_speedY -= ARG_GRAVITY;
+		}
+		else{
+			_isFly = false;
+			_speedY = 0;
+			updateStatus();
+		}
+	}
+	else{
+		_speedY -= ARG_GRAVITY;
+
+	}
+
+
 }
 
 //水平移动检测
 void Mario::moveHorizontalCheck(float dt){
-	if (!m_speedX)
+	if (!_speedX)
 		return;
 	if (!canMoveHorizontally(dt))
 		return;
-	this->setPositionX(getPositionX() + m_speedX*dt);
-	if (m_speedX > 0){
+	this->setPositionX(getPositionX() + _speedX*dt);
+	if (_speedX > 0){
 		CCNode* node = getParent();
-		CCPoint ptWorld = node->convertToWorldSpace(getPosition());
+		Vec2 ptWorld = node->convertToWorldSpace(getPosition());
 
-		if (!m_bIsAutoRunning&&ptWorld.x > winSize.width / 2){
-			node->setPositionX(node->getPositionX() - dt*abs(m_speedX));
+		if (!_isAutoRunning&&ptWorld.x > winSize.width / 2){
+			node->setPositionX(node->getPositionX() - dt*abs(_speedX));
 		}
 	}
 
 	//m_speed = 0;
 }
 
-
+void Mario::setDead(bool isDead){
+	_isDead = isDead;
+}
 
 
 void Mario::die(bool realDead){
-	CCLOG("maiio die");
-	return;
+	if (isDead())
+		return;
+
 	if (realDead){
 		//真正死亡了
-		m_bIsDead = true;
-		updateStatus();
+		_isDead = true;
+		--_life;
+
+		this->stopAllActions();
+		
+		_speedX = 0;
+
+		//进入死亡动画
+		Animate* animate = Animate::create(AnimationCache::getInstance()
+										   ->getAnimation("smallDieAnimation"));
+		MoveBy* moveBy = MoveBy::create(1,
+										Vec2(0, -winSize.height));
+		CallFunc* callfunc = CallFunc::create([&](){
+			//死亡动画结束了
+
+			SceneGame* game = dynamic_cast<SceneGame*> (getMap()->getParent());
+			if (game){
+				if (_life > 0){
+					int level = game->_level;
+					this->removeFromParent();
+					Director::getInstance()->replaceScene(SceneGame::create(level));
+				}
+				else{
+					game->gameOver();
+				}
+			}
+			else{
+				CCLOG("%s:%d dynamic_cast err", __FILE__, __LINE__);
+			}
+
+
+
+		});
+
+		runAction(Sequence::create(animate, moveBy, callfunc, nullptr));
+
+
 	}
 	else{
 		//碰到怪先变小
-		
-		if (m_bIsBig){
-			m_bIsBig = false;
-			m_canFire = false;
+
+		if (_isBig){
+			_isBig = false;
+			_canFire = false;
 			this->beginGodMode();
 			this->updateStatus();
 		}
 		else{
 			die(true);
 		}
-	
+
 	}
 }
-void Mario::dieCallback(){
-	LayerGame::gameOver();
-}
+
 bool Mario::isFly(){
-	return m_bIsFly;
+	return _isFly;
+}
+bool Mario::isDead(){
+	return _isDead;
 }
 
 //顶到东西处理
-void Mario::hitSomething(CCTMXLayer * layer, int gid, CCPoint ptTile){
+void Mario::hitSomething(TMXLayer * layer, int gid, Vec2 ptTile){
 	if (std::string(layer->getLayerName()) != "block")
 		return;
-	CCSprite* sprite = layer->tileAt(ptTile);
-	CCCallFuncN *callfunc = CCCallFuncN::create(this, callfuncN_selector(Mario::wakeupMushroomRewardCallback));
-	CCJumpBy*  by = CCJumpBy::create(0.3f, ccp(0, 0), 12, 1);
-	sprite->runAction(CCSequence::create(by,callfunc,NULL));
-
-	
-	
+	Sprite* sprite = layer->tileAt(ptTile);
+	CallFuncN *callfunc = CallFuncN::create(this, CC_CALLFUNCN_SELECTOR(Mario::checkHitMushroomCallback));
+	JumpBy*  by = JumpBy::create(0.3f, Vec2(0, 0), 12, 1);
+	sprite->runAction(Sequence::create(by, callfunc, nullptr));
 }
 
-void Mario::wakeupMushroomRewardCallback(CCNode* node){
-	//using MapIt = std::set<Item*>::iterator;
+void Mario::checkHitMushroomCallback(CCNode* node){
 
-	typedef std::set<Item*>::iterator MapIt;
-	
-	for (MapIt ib = Item::sm_items->begin(); ib != Item::sm_items->end(); ){
+	SceneGame* game = dynamic_cast<SceneGame*>(getMap()->getParent());
+	if (!game){
+		CCLOG_DYNAMIC_ERR;
+		return;
+	}
+	//那块砖
+	Rect rcNode = node->getBoundingBox();
+	rcNode.size = rcNode.size - Size(1, 1);
+
+	for (auto ib = game->_mushrooms.begin(); ib != game->_mushrooms.end(); ++ib){
 		Item* item = *ib;
-		CCRect rcItem = item->boundingBox();
+		Rect rcItem = item->getBoundingBox();
+		rcItem.size = rcItem.size - Size(1, 1);
 
-		//那块砖
-		CCRect rcNode = node->boundingBox();
-		rcItem.size.width -= 1;
-		rcNode.size.width -= 1;
-		rcItem.size.height -= 1;
-		rcNode.size.height -= 1;
+		//撞到蘑菇了
 		if (rcItem.intersectsRect(rcNode)){
 			item->setVisible(true);
-			item->wakeup();
-			//MapIt ib2=Item::sm_items->erase(ib);
-			
+			ItemMushroom* mushroom = dynamic_cast<ItemMushroom*>(item);
+			if (!mushroom)
+				CCLOG_DYNAMIC_ERR;
+			mushroom->wakeup();
+			game->_mushrooms.erase(ib);
 			break;
 		}
-		else{
-			++ib;
-		}
+
 	}
 }
 
 void Mario::eatMushroom(Item::ItemType type){
-	if (type==Item::IT_MUSHROOMREWARD)
-		m_bIsBig = true;
+	if (type == Item::IT_MUSHROOMREWARD)
+		_isBig = true;
 }
 
 void Mario::beginGodMode(float dt){
-	if (m_bIsGodMode)
+	if (_isGodMode)
 		return;
 
-	m_bIsGodMode = true;
+	_isGodMode = true;
 	scheduleOnce(schedule_selector(Mario::cancelGodModeCallback), dt);
 }
 void Mario::cancelGodModeCallback(float dt){
-	m_bIsGodMode = false;
+	_isGodMode = false;
 }
 
 bool Mario::isGodMode(){
-	return m_bIsGodMode;
+	return _isGodMode;
 }
 
 void Mario::autoRun(){
-	m_bIsAutoRunning = true;
+	_isAutoRunning = true;
 	updateStatus();
-	m_speedY = 0;
+	_speedY = 0;
 
-	//让旗杆自动下滑
-	Item::sm_flag->autoDropFlag();
+
 
 	//自动向前走
 	scheduleOnce(schedule_selector(Mario::beginAutoMoveRightCallback), 1.5f);
@@ -549,7 +579,6 @@ void Mario::beginAutoMoveRightCallback(float dt){
 	//自动向前走
 	schedule(schedule_selector(Mario::autoMoveRightCallback));
 
-	
 }
 void Mario::autoMoveRightCallback(float dt){
 	setPositionX(getPositionX() + dt * 100);
@@ -558,35 +587,35 @@ void Mario::autoMoveRightCallback(float dt){
 void Mario::setIsOnLadder(bool isOnLadder){
 	//if (isOnLadder)
 	//CCLOG("setIsOnLadder() invoke isOnLadder=%d", isOnLadder);
-	m_bIsOnLadder = isOnLadder;
+	_isOnLadder = isOnLadder;
 }
 bool Mario::isOnLadder(){
-	return m_bIsOnLadder;
+	return _isOnLadder;
 }
 
 int Mario::getSpeedY(){
-	return m_speedY;
+	return _speedY;
 }
 int Mario::getSpeedX(){
-	return m_speedX;
+	return _speedX;
 }
 
 void Mario::setSpeedY(int v_y){
-	m_speedY = v_y;
+	_speedY = v_y;
 }
 void Mario::setSpeedX(int v_x){
-	m_speedX = v_x;
+	_speedX = v_x;
 }
 
 void Mario::reverseSpeedY(){
-	m_speedY = -m_speedY;
+	_speedY = -_speedY;
 }
 
 void  Mario::setIsFly(bool isFly){
-	m_bIsFly = isFly;
+	_isFly = isFly;
 }
 
 void Mario::endAutoRun() {
 
-	m_bIsAutoRunning = false;
+	_isAutoRunning = false;
 }

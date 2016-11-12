@@ -1,8 +1,9 @@
 #include "ItemAddMushroom.h"
 
-ItemAddMushroom* ItemAddMushroom::create(CCDictionary* dict){
+ItemAddMushroom* ItemAddMushroom::create(ValueMap& map)
+{
 	ItemAddMushroom * pRet = new ItemAddMushroom();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -14,10 +15,11 @@ ItemAddMushroom* ItemAddMushroom::create(CCDictionary* dict){
 }
 
 
-bool ItemAddMushroom::init(CCDictionary* dict){
-	Item::init();
-	m_type = Item::IT_MUSHROOM;
-	setPositionByProperty(dict);
+bool ItemAddMushroom::init(ValueMap& map)
+{
+	ItemCanMove::init();
+	_type = Item::IT_MushroomMonster;
+	setPositionByProperty(map);
 	setDisplayFrameWithAnimationName("mushroomMoving", 0);
 	return true;
 }

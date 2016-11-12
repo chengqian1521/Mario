@@ -1,8 +1,9 @@
 #include "ItemFlagpoint.h"
 
-ItemFlagpoint* ItemFlagpoint::create(CCDictionary* dict){
+ItemFlagpoint* ItemFlagpoint::create(ValueMap& map)
+{
 	ItemFlagpoint * pRet = new ItemFlagpoint();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -14,10 +15,11 @@ ItemFlagpoint* ItemFlagpoint::create(CCDictionary* dict){
 }
 
 
-bool ItemFlagpoint::init(CCDictionary* dict){
+bool ItemFlagpoint::init(ValueMap& map)
+{
 	Item::init();
-	m_type = Item::IT_FLAGPOINT;
-	setPositionByProperty(dict);
+	_type = Item::IT_FLAGPOINT;
+	setPositionByProperty(map);
 
 	CCTexture2D* texture = CCTextureCache::sharedTextureCache()->addImage("flag.png");
 	setTexture(texture);

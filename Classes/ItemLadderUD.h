@@ -6,8 +6,8 @@ class ItemLadderUD :public Item
 {
 public:
 
-	static ItemLadderUD* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
+	static ItemLadderUD* create(ValueMap& map);
+	bool init(ValueMap& map);
 
 
 };

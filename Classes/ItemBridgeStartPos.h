@@ -6,8 +6,8 @@ class ItemBridgeStartPos :public Item
 {
 public:
 
-	static ItemBridgeStartPos* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
+	static ItemBridgeStartPos* create(ValueMap& map);
+	bool init(ValueMap& map);
 	virtual void collisionCheck(float dt);
 
 };

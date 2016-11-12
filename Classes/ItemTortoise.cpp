@@ -1,9 +1,10 @@
 #include "ItemTortoise.h"
 #include "Mario.h"
 
-ItemTortoise* ItemTortoise::create(CCDictionary* dict){
+ItemTortoise* ItemTortoise::create(ValueMap& map)
+{
 	ItemTortoise * pRet = new ItemTortoise();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -15,22 +16,23 @@ ItemTortoise* ItemTortoise::create(CCDictionary* dict){
 }
 
 
-bool ItemTortoise::init(CCDictionary* dict){
-	Item::init();
-	m_type = Item::IT_MUSHROOM;
-	setPositionByProperty(dict);
+bool ItemTortoise::init(ValueMap& map)
+{
+	ItemCanMove::init();
+	_type = Item::IT_MushroomMonster;
+	setPositionByProperty(map);
 	//setDisplayFrameWithAnimationName("mushroomMoving", 0);
 	
 	m_initXV = -40;
-	m_speedY = 0;
-	m_speedX = m_initXV;
+	_speedY = 0;
+	_speedX = m_initXV;
 	m_bIsDead = false;
-	m_bIsGodMode = false;
+	_isGodMode = false;
 	m_state = NORMAL;
-	this->runAction(CCRepeatForever::create(CCAnimate::create(CCAnimationCache::sharedAnimationCache()->animationByName("tortoiseLeftMoving"))));
+	this->runAction(RepeatForever::create(CCAnimate::create(CCAnimationCache::sharedAnimationCache()->animationByName("tortoiseLeftMoving"))));
 	return true;
 }
-void ItemTortoise::move(float dt){
+void ItemTortoise::moveCheck(float dt){
 	if (m_state == SLEEP)
 		return;
 	
@@ -39,7 +41,7 @@ void ItemTortoise::move(float dt){
 	}
 	else{
 		
-		m_speedX = -m_speedX;
+		_speedX = -_speedX;
 		
 		updateStatus();
 	}
@@ -48,7 +50,7 @@ void ItemTortoise::move(float dt){
 		moveDown(dt);
 	}
 	else{
-		m_speedY = 0;
+		_speedY = 0;
 	}
 
 	if (isOutOfWindow()){
@@ -65,23 +67,23 @@ void ItemTortoise::move(float dt){
 void ItemTortoise::collisionCheck(float dt){
 	if (m_bIsDead)
 		return;
-	if (m_bIsGodMode)
+	if (_isGodMode)
 		return;
-	CCRect rcMario = Item::sm_mario->boundingBox();
+	CCRect rcMario = Mario::getInstance()->boundingBox();
 	CCRect rcItem = this->boundingBox();
 
 	if (rcMario.intersectsRect(rcItem)){
 
 		if (m_state==NORMAL){
-			if (Item::sm_mario->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
-				m_speedX = 0;
+			if (Mario::getInstance()->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
+				_speedX = 0;
 				m_state = SLEEP;
 				
 				//无敌一段时间
-				m_bIsGodMode = true;
+				_isGodMode = true;
 				
 				//让马里奥弹出去
-				sm_mario->jump(100);
+				Mario::getInstance()->jump(100);
 				
 				scheduleOnce(schedule_selector(ItemTortoise::cancelGodModeCallback), 0.2f);
 
@@ -91,7 +93,7 @@ void ItemTortoise::collisionCheck(float dt){
 			}
 			else{
 				//马里奥死亡
-				sm_mario->die(false);
+				Mario::getInstance()->die(false);
 			
 			}
 			return;
@@ -99,21 +101,21 @@ void ItemTortoise::collisionCheck(float dt){
 		}
 
 		if (m_state==SLEEP){
-			m_speedX = sm_mario->getPositionX() < getPositionX() ?
+			_speedX = Mario::getInstance()->getPositionX() < getPositionX() ?
 				-m_initXV * 3 : m_initXV * 3;
 			m_state = CRAZY;
 			
 			return;
 		}
 		if (m_state == CRAZY){
-			if (Item::sm_mario->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
+			if (Mario::getInstance()->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
 				this->stopAllActions();
 				this->runAction(CCRepeatForever::create(CCAnimate::create(CCAnimationCache::sharedAnimationCache()->animationByName("tortoiseDead"))));
 
-				m_speedX = 0;
+				_speedX = 0;
 				m_state = SLEEP;
 				//无敌一段时间
-				m_bIsGodMode = true;
+				_isGodMode = true;
 				scheduleOnce(schedule_selector(ItemTortoise::cancelGodModeCallback), 0.2f);
 
 				//过一段时间复活
@@ -121,9 +123,9 @@ void ItemTortoise::collisionCheck(float dt){
 
 			}
 			else{
-				if (sm_mario->isGodMode())
+				if (Mario::getInstance()->isGodMode())
 					return;
-				sm_mario->die();
+				Mario::getInstance()->die();
 
 			}
 			
@@ -136,17 +138,17 @@ void ItemTortoise::collisionCheck(float dt){
 }
 
 void ItemTortoise::cancelGodModeCallback(float dt){
-	m_bIsGodMode = false;
+	_isGodMode = false;
 }
 void ItemTortoise::reLiveCallback(float dt){
 	if (m_state == SLEEP){
 
 		m_state = NORMAL;
-		m_speedX = m_initXV;
+		_speedX = m_initXV;
 		stopAllActions();
 		this->runAction(CCRepeatForever::create(CCAnimate::create(
 			CCAnimationCache::sharedAnimationCache()
-			->animationByName(m_speedX > 0 ?
+			->animationByName(_speedX > 0 ?
 			"tortoiseRightMoving" : "tortoiseLeftMoving"))));
 
 	}
@@ -159,7 +161,7 @@ void ItemTortoise::updateStatus(){
 		
 	this->runAction(CCRepeatForever::create(CCAnimate::create(
 				CCAnimationCache::sharedAnimationCache()
-				->animationByName(m_speedX > 0 ?
+				->animationByName(_speedX > 0 ?
 				"tortoiseRightMoving" : "tortoiseLeftMoving"))));
 
 		

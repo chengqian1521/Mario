@@ -1,8 +1,8 @@
 #ifndef __ItemBoss_H__
 #define __ItemBoss_H__
 #include "Common.h"
-#include "Item.h"
-class ItemBoss :public Item
+#include "ItemCanMove.h"
+class ItemBoss :public ItemCanMove
 {
 public:
 	enum State
@@ -10,9 +10,9 @@ public:
 	NORMAL,
 	DROPPING
 	} m_status;
-	static ItemBoss* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
-	virtual void move(float dt);
+	static ItemBoss* create(ValueMap& map);
+	bool init(ValueMap& map);
+	virtual void moveCheck(float dt);
 	virtual void collisionCheck(float dt);
 	void updateStatus();
 	void jumpCallback(float dt);

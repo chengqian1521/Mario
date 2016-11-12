@@ -1,8 +1,9 @@
 #include "ItemBattery.h"
 
-ItemBattery* ItemBattery::create(CCDictionary* dict){
+ItemBattery* ItemBattery::create(ValueMap& map)
+{
 	ItemBattery * pRet = new ItemBattery();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -14,10 +15,11 @@ ItemBattery* ItemBattery::create(CCDictionary* dict){
 }
 
 
-bool ItemBattery::init(CCDictionary* dict){
-	Item::init();
-	m_type = Item::IT_MUSHROOM;
-	setPositionByProperty(dict);
+bool ItemBattery::init(ValueMap& map)
+{
+	ItemCanMove::init();
+	_type = Item::IT_MushroomMonster;
+	setPositionByProperty(map);
 	setDisplayFrameWithAnimationName("mushroomMoving", 0);
 	return true;
 }

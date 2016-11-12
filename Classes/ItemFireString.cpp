@@ -1,8 +1,9 @@
 #include "ItemFireString.h"
 #include "Mario.h"
-ItemFireString* ItemFireString::create(CCDictionary* dict){
+ItemFireString* ItemFireString::create(ValueMap& map)
+{
 	ItemFireString * pRet = new ItemFireString();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -14,10 +15,11 @@ ItemFireString* ItemFireString::create(CCDictionary* dict){
 }
 
 
-bool ItemFireString::init(CCDictionary* dict){
+bool ItemFireString::init(ValueMap& map)
+{
 	Item::init();
-	m_type = Item::IT_fire_string;
-	setPositionByProperty(dict);
+	_type = Item::IT_fire_string;
+	setPositionByProperty(map);
 	
 	CCTexture2D* texture = CCTextureCache::sharedTextureCache()->
 		addImage("bossBullet.png");
@@ -26,10 +28,10 @@ bool ItemFireString::init(CCDictionary* dict){
 		texture->getContentSize().height));
 
 	setAnchorPoint(ccp(0,0.5f));
-	int begAngle=dict->valueForKey("begAngle")->intValue();
+	int begAngle = map.at("begAngle").asInt();
 	setRotation(begAngle);
 
-	int time = dict->valueForKey("time")->intValue();
+	int time = map.at("time").asInt();
 
 	runAction(CCRepeatForever::create(
 		CCRotateBy::create(time, 360)));
@@ -74,7 +76,7 @@ void ItemFireString::collisionCheck(float dt){
 
 	}
 	//CCLOG("len%g", fireString.p1.getDistance(fireString.p2));
-	CCRect rcMario = sm_mario->boundingBox();
+	CCRect rcMario = Mario::getInstance()->boundingBox();
 	//marioµÄÏß¶Î
 	Line lineMario[2];
 	lineMario[0].p1 = ccp(rcMario.getMinX(), rcMario.getMinY());
@@ -84,7 +86,7 @@ void ItemFireString::collisionCheck(float dt){
 
 	for (int i = 0; i < 2; ++i){
 		if (ccpSegmentIntersect(lineMario[i].p1, lineMario[i].p2, fireString.p1, fireString.p2)){
-			sm_mario->die(false);
+			Mario::getInstance()->die(false);
 		}
 	}															
 }

@@ -1,8 +1,9 @@
 #include "ItemFlyFish.h"
 #include "Mario.h"
-ItemFlyFish* ItemFlyFish::create(CCDictionary* dict){
+ItemFlyFish* ItemFlyFish::create(ValueMap& map)
+{
 	ItemFlyFish * pRet = new ItemFlyFish();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -14,23 +15,24 @@ ItemFlyFish* ItemFlyFish::create(CCDictionary* dict){
 }
 
 
-bool ItemFlyFish::init(CCDictionary* dict){
+bool ItemFlyFish::init(ValueMap& map)
+{
 	Item::init();
-	m_type = Item::IT_flyfish;
-	setPositionByProperty(dict);
+	_type = Item::IT_flyfish;
+	setPositionByProperty(map);
 
-	m_duration = dict->valueForKey("duration")->intValue();
-	m_offsetH = dict->valueForKey("offsetH")->intValue();
-	m_offsetV = dict->valueForKey("offsetV")->intValue();
+	m_duration = map.at("duration").asInt();
+	m_offsetH = map.at("offsetH").asInt();
+	m_offsetV = map.at("offsetV").asInt();
 	//setVisible(false);
 	//m_speedY = m_offsetV *4;
-	m_speedX = m_offsetH;
+	_speedX = m_offsetH;
 	_alreadlyFly = false;
 	
 	return true;
 }
 
-void ItemFlyFish::move(float dt){
+void ItemFlyFish::moveCheck(float dt){
 	if (Mario::getInstance()->getPositionX() < getPositionX())
 		return;
 	if (!this->isAppearInWindow()||_alreadlyFly){
@@ -77,6 +79,6 @@ void ItemFlyFish::updateStatus(){
 	
 	
 	CCAnimation* ani = CCAnimationCache::sharedAnimationCache()
-		->animationByName(m_speedX>0 ? "flyFishRight" : "flyFishLeft");
+		->animationByName(_speedX>0 ? "flyFishRight" : "flyFishLeft");
 	this->runAction(CCRepeatForever::create(CCAnimate::create(ani)));
 }

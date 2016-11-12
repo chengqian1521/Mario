@@ -6,19 +6,21 @@ class ItemLadderLR :public Item
 {
 public:
 
-	static ItemLadderLR* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
+	static ItemLadderLR* create(ValueMap& map);
+	bool init(ValueMap& map);
 
-	virtual void move(float dt);
+	virtual void moveCheck(float dt);
 	virtual void collisionCheck(float dt);
 
 protected:
-	int m_lorR;
-	float m_ladderDis;
-	float m_dist;
+	int		m_lorR;
+	float	m_ladderDis;
+	float	m_dist;
 	
+	CC_SYNTHESIZE(int, _speedX, SpeedX);
+	CC_SYNTHESIZE(int, _speedY, SpeedY);
 
 	//标记该梯子上是否有马里奥
-	bool m_bIsMarioOnThis;
+	bool	m_bIsMarioOnThis;
 };
 #endif

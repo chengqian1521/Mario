@@ -1,8 +1,8 @@
 #ifndef __ItemTortoiseRound_H__
 #define __ItemTortoiseRound_H__
 #include "Common.h"
-#include "Item.h"
-class ItemTortoiseRound :public Item
+#include "ItemCanMove.h"
+class ItemTortoiseRound :public ItemCanMove
 {
 public:
 	enum State
@@ -11,10 +11,10 @@ public:
 		SLEEP,
 		CRAZY
 	};
-	static ItemTortoiseRound* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
+	static ItemTortoiseRound* create(ValueMap& map);
+	bool init(ValueMap& map);
 
-	virtual void move(float dt);
+	virtual void moveCheck(float dt);
 	virtual void collisionCheck(float dt);
 	void updateStatus();
 
@@ -24,6 +24,6 @@ public:
 	int m_roundDis;
 	
 	int m_state;
-	bool m_bIsGodMode;
+	bool _bIsGodMode;
 };
 #endif

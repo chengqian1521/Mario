@@ -1,8 +1,9 @@
 #include "ItemFlower.h"
 #include "Mario.h"
-ItemFlower* ItemFlower::create(CCDictionary* dict){
+ItemFlower* ItemFlower::create(ValueMap& map)
+{
 	ItemFlower * pRet = new ItemFlower();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -14,10 +15,11 @@ ItemFlower* ItemFlower::create(CCDictionary* dict){
 }
 
 
-bool ItemFlower::init(CCDictionary* dict){
+bool ItemFlower::init(ValueMap& map)
+{
 	Item::init();
-	m_type = Item::IT_FLOWER;
-	setPositionByProperty(dict);
+	_type = Item::IT_FLOWER;
+	setPositionByProperty(map);
 	//setDisplayFrameWithAnimationName("mushroomMoving", 0);
 
 	
@@ -26,7 +28,7 @@ bool ItemFlower::init(CCDictionary* dict){
 	m_yButtom = m_yTop - 64;
 //	m_yButtom=Common::mapPointToG_LBPoint(this->getMap(),
 //										  ccp(0,11)).y;
-	m_speedY = 50;
+	_speedY = 50;
 
 	setZOrder(0);
 	setPositionX(getPositionX() - 8);
@@ -50,23 +52,27 @@ void ItemFlower::updateStatus(){
 
 void ItemFlower::cancelShowCallback(float){
 	m_bShow = false;
-	m_speedY = -m_speedY;
+	_speedY = -_speedY;
 	
 }
-
-void ItemFlower::move(float dt){
+void ItemFlower::update(float dt){
+	moveCheck(dt);
+	collisionCheck(dt);
+}
+void ItemFlower::moveCheck(float dt){
 	if (m_bShow)
 		return;
-
-	float targetY = getPositionY() + dt*m_speedY;
-	if (m_speedY > 0){
+	if (Mario::getInstance()->isDead())
+		return;
+	float targetY = getPositionY() + dt*_speedY;
+	if (_speedY > 0){
 		//ÕýÔÚÉÏÉý
 		CCRect rc =this->boundingBox();
 		CCRect rcWill = rc;
-		rcWill.origin.y += dt*m_speedY;
-		CCPoint ptMario = sm_mario->getPosition();
+		rcWill.origin.y += dt*_speedY;
+		CCPoint ptMario = Mario::getInstance()->getPosition();
 		//CCLOG("ptMario.y=%g,m_yTop=%g", ptMario.y, m_yTop);
-		if (!sm_mario->isFly()&&rcWill.intersectsRect(sm_mario->boundingBox())){
+		if (!Mario::getInstance()->isFly()&&rcWill.intersectsRect(Mario::getInstance()->boundingBox())){
 			targetY = m_yButtom;
 		}
 
@@ -82,7 +88,7 @@ void ItemFlower::move(float dt){
 	if (targetY < m_yButtom){
 		targetY = m_yButtom;
 		
-		m_speedY = -m_speedY;
+		_speedY = -_speedY;
 	}
 
 	setPositionY(targetY);
@@ -90,14 +96,18 @@ void ItemFlower::move(float dt){
 
 void ItemFlower::collisionCheck(float dt){
 	
-	if (sm_mario->isGodMode())
+	auto mario=Mario::getInstance();
+	if (mario->isGodMode())
 		return;
+	if (mario->isDead())
+		return;
+
 	//Åö×²¼ì²â
 	CCRect rcItem = this->boundingBox();
-	CCRect rcMario = sm_mario->boundingBox();
+	CCRect rcMario = mario->boundingBox();
 	if (rcItem.intersectsRect(rcMario)){
 		//CCLOG("2");
-		sm_mario->die();
+		mario->die();
 	}
 
 }

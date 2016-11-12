@@ -1,8 +1,8 @@
 #ifndef __ItemTortoiseFly_H__
 #define __ItemTortoiseFly_H__
 #include "Common.h"
-#include "Item.h"
-class ItemTortoiseFly :public Item
+#include "ItemCanMove.h"
+class ItemTortoiseFly :public ItemCanMove
 {
 public:
 	//״̬
@@ -14,12 +14,12 @@ public:
 		SLEEP,
 		CRAZY
 	} m_status;
-	static ItemTortoiseFly* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
+	static ItemTortoiseFly* create(ValueMap& map);
+	bool init(ValueMap& map);
 
 	void updateStatus();
 
-	virtual void move(float dt);
+	virtual void moveCheck(float dt);
 	virtual void collisionCheck(float dt);
 	void reLiveCallback(float);
 	

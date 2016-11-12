@@ -1,8 +1,9 @@
 #include "ItemBullet.h"
 
-ItemBullet* ItemBullet::create(CCDictionary* dict){
+ItemBullet* ItemBullet::create()
+{
 	ItemBullet * pRet = new ItemBullet();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init()){
 		pRet->autorelease();
 	}
 	else{
@@ -14,9 +15,10 @@ ItemBullet* ItemBullet::create(CCDictionary* dict){
 }
 
 
-bool ItemBullet::init(CCDictionary* dict){
+bool ItemBullet::init()
+{
 	Item::init();
-	m_type = Item::IT_bullet;
+	_type = Item::IT_bullet;
 	//setPositionByProperty(dict);
 	
 

@@ -1,9 +1,10 @@
 #include "ItemBridgeStartPos.h"
 #include "Mario.h"
 #include "ItemBoss.h"
-ItemBridgeStartPos* ItemBridgeStartPos::create(CCDictionary* dict){
+ItemBridgeStartPos* ItemBridgeStartPos::create(ValueMap& map)
+{
 	ItemBridgeStartPos * pRet = new ItemBridgeStartPos();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -15,10 +16,11 @@ ItemBridgeStartPos* ItemBridgeStartPos::create(CCDictionary* dict){
 }
 
 
-bool ItemBridgeStartPos::init(CCDictionary* dict){
+bool ItemBridgeStartPos::init(ValueMap& map)
+{
 	Item::init();
-	m_type = Item::IT_BridgeStartPos;
-	setPositionByProperty(dict);
+	_type = Item::IT_BridgeStartPos;
+	setPositionByProperty(map);
 
 	setContentSize(CCSizeMake(16, 16));
 

@@ -1,13 +1,13 @@
 #ifndef __ItemAddMushroom_H__
 #define __ItemAddMushroom_H__
 #include "Common.h"
-#include "Item.h"
-class ItemAddMushroom :public Item
+#include "ItemCanMove.h"
+class ItemAddMushroom :public ItemCanMove
 {
 public:
 
-	static ItemAddMushroom* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
+	static ItemAddMushroom* create(ValueMap& map);
+	bool init(ValueMap& map);
 
 
 };

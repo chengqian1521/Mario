@@ -1,48 +1,40 @@
 #include "Common.h"
 #include "stdio.h"
-CCScene* Common::scene(CCLayer * layer){
-	CCScene* scene = CCScene::create();
-	scene->addChild(layer);
 
-	return scene;
-}
 
 void Common::format(char * ret, char * prefix, int v, char *suffix){
-
 	sprintf(ret, "%s%d%s", prefix, v, suffix);
+}
+
+Animation* Common::createAnimation(const char * finename, int start, int num, int width, float  duration){
+
+	Texture2D*  texture = TextureCache::getInstance()->addImage(finename);
+	Vector<SpriteFrame*> vec;
+	for (int i = start; i < start + num; ++i){
+		SpriteFrame* frame = SpriteFrame::createWithTexture(texture, Rect(width*i, 0, width, texture->getContentSize().height));
+		vec.pushBack(frame);
+	}
+
+	return Animation::createWithSpriteFrames(vec, duration);
+
 
 }
 
- CCAnimation* Common::createAnimation(const char * finename, int start, int num, int width, float  duration){
+Vec2 Common::mapPointToG_LBPoint(TMXTiledMap* map, const Vec2& ptMap){
 
-	 CCTexture2D*  texture = CCTextureCache::sharedTextureCache()->addImage(finename);
-	 CCArray* arr = CCArray::create();
-	 for (int i = start; i < start+num; ++i){
-		 CCSpriteFrame* frame = CCSpriteFrame::createWithTexture(texture,CCRectMake(width*i,0,width,texture->getContentSize().height));
-		 arr->addObject(frame);
-	 }
 
-	 return CCAnimation::createWithSpriteFrames(arr, duration);
+	return Vec2(ptMap.x*map->getTileSize().width,
+				(map->getMapSize().height - ptMap.y - 1)*map->getTileSize().height);
+}
+Vec2 Common::pointToMap(TMXTiledMap* map, const Vec2& pt){
 
-	 
+	return Vec2((int)(pt.x / map->getTileSize().width),
+				map->getMapSize().height - 1 - (int)(pt.y / map->getTileSize().height));
+
 }
 
- CCPoint Common::mapPointToG_LBPoint(CCTMXTiledMap* map,CCPoint ptMap){
+SpriteFrame* Common::getSpriteFrame(const char* filename, int pos, int width){
+	Texture2D*  texture = TextureCache::getInstance()->addImage(filename);
+	return  SpriteFrame::createWithTexture(texture, Rect(width*pos, 0, width, texture->getContentSize().height));
 
-
-	 return CCPoint(ptMap.x*map->getTileSize().width,
-					(map->getMapSize().height - ptMap.y - 1)*map->getTileSize().height);
- }
- CCPoint Common::pointToMap(CCTMXTiledMap* map,CCPoint pt){
-	
-	 return CCPoint((int)(pt.x / map->getTileSize().width),
-					map->getMapSize().height - 1 - (int)(pt.y / map->getTileSize().height));
-
- }
-
-  CCSpriteFrame* Common::getSpriteFrame(const char* filename, int pos, int width){
-	  CCTexture2D*  texture = CCTextureCache::sharedTextureCache()->addImage(filename);
-	 return  CCSpriteFrame::createWithTexture(texture, CCRectMake(width*pos, 0, width, texture->getContentSize().height));
-
- 
- }
+}
