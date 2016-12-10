@@ -24,81 +24,78 @@ Mario* Mario::getInstance(){
 
 bool Mario::init(){
 
-	Texture2D* texture = TextureCache::getInstance()->addImage("smallWalkRight.png");
+	Texture2D* texture = Director::getInstance()->getTextureCache()->addImage("smallWalkRight.png");
 	SpriteFrame* frame = SpriteFrame::createWithTexture(texture, Rect(0, 0, texture->getContentSize().width / 11, texture->getContentSize().height));
 	Sprite::initWithSpriteFrame(frame);
 
-	m_faceDir = Common::RIGHT;//静止时脸的朝向
-	_speedX = 0;	//速度,规定向右为正, 单位:每秒移动多少像素
-	_speedY = 0;	//向上的速度
-
-
+	m_faceDir = common::RIGHT;
+	_speedX = 0;	
+	_speedY = 0;	
 	_speed_const = 100;
 	_isFly = false;
 	_life = 3;
-	_canFire = false;
-	_isBig = false;
+	_state = State::Small;
 	_isGodMode = false;
 	_isDead = false;
 	_isAutoRunning = false;
 	_isOnLadder = false;
+
+	initResourceCache();
+
+	return true;
+}
+
+void Mario::initResourceCache(){
 	{
 
-
 		//加载到缓存中
-		CCAnimationCache::sharedAnimationCache()->addAnimation(Common::createAnimation("smallWalkLeft.png",
+		AnimationCache::getInstance()->addAnimation(myutil::createAnimation("smallWalkLeft.png",
 			0, 10, 14, 0.05f), "smallMoveLeftAnimation");
-		CCAnimationCache::sharedAnimationCache()->addAnimation(Common::createAnimation("smallWalkRight.png",
+		AnimationCache::getInstance()->addAnimation(myutil::createAnimation("smallWalkRight.png",
 			0, 10, 14, 0.05f), "smallMoveRightAnimation");
 
 		//马里奥跳的时候要用的帧
-
-
-		CCSpriteFrameCache::sharedSpriteFrameCache()
-			->addSpriteFrame(Common::getSpriteFrame("smallWalkLeft.png", 10, 14),
+		SpriteFrameCache::getInstance()
+			->addSpriteFrame(myutil::getSpriteFrame("smallWalkLeft.png", 10, 14),
 			"smallJumpLeft");
-
-
-
-		CCSpriteFrameCache::sharedSpriteFrameCache()->
-			addSpriteFrame(Common::getSpriteFrame("smallWalkRight.png", 10, 14)
+		SpriteFrameCache::getInstance()->
+			addSpriteFrame(myutil::getSpriteFrame("smallWalkRight.png", 10, 14)
 			, "smallJumpRight");
 	}
 	{
 
 		//加载到缓存中
-		CCAnimationCache::sharedAnimationCache()
-			->addAnimation(Common::createAnimation("walkRight.png",
+		AnimationCache::getInstance()
+			->addAnimation(myutil::createAnimation("walkRight.png",
 			0, 10, 18, 0.05f), "bigMoveRightAnimation");
 
-		CCAnimationCache::sharedAnimationCache()
-			->addAnimation(Common::createAnimation("walkLeft.png",
+		AnimationCache::getInstance()
+			->addAnimation(myutil::createAnimation("walkLeft.png",
 			0, 10, 18, 0.05f)
 			, "bigMoveLeftAnimation");
 
 		//马里奥跳的时候要用的帧
 
 
-		CCSpriteFrameCache::sharedSpriteFrameCache()
-			->addSpriteFrame(Common::getSpriteFrame("walkLeft.png", 10, 18),
+		SpriteFrameCache::getInstance()
+			->addSpriteFrame(myutil::getSpriteFrame("walkLeft.png", 10, 18),
 			"bigJumpLeft");
 
 
 
-		CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFrame(
-			Common::getSpriteFrame("walkRight.png", 10, 18),
+		SpriteFrameCache::getInstance()->addSpriteFrame(
+			myutil::getSpriteFrame("walkRight.png", 10, 18),
 			"bigJumpRight");
 
 
 	}
 	{
-		CCAnimationCache::sharedAnimationCache()
-			->addAnimation(Common::createAnimation("small_die.png",
+		AnimationCache::getInstance()
+			->addAnimation(myutil::createAnimation("small_die.png",
 			0, 7, 16, 0.05f)
 			, "smallDieAnimation");
 
 	}
-	return true;
 }
 
 //更新状态
@@ -109,19 +106,35 @@ void Mario::updateStatus(){
 
 	this->stopAllActions();
 	if (_isAutoRunning){
-		this->setDisplayFrameWithAnimationName(_isBig ? "bigMoveRightAnimation" : "smallMoveRightAnimation", 0);
+		char *name = nullptr;
+		switch (_state)
+		{
+		case Mario::Small:
+			name = "smallMoveRightAnimation";
+			break;
+		case Mario::Big:
+			name = "bigMoveRightAnimation";
+			break;
+		case Mario::CanFire:
+			name = "bigMoveRightAnimation";
+			break;
+		default:
+			name = nullptr;
+			break;
+		}
+		this->setDisplayFrameWithAnimationName( name , 0);
 		return;
 	}
 	
 	if (_isFly){
-		if (_isBig){
-			this->setDisplayFrame(CCSpriteFrameCache::sharedSpriteFrameCache()
-								  ->spriteFrameByName(m_faceDir == Common::LEFT ?
+		if (_state!=State::Small){
+			this->setSpriteFrame(SpriteFrameCache::getInstance()
+								  ->getSpriteFrameByName(m_faceDir == common::LEFT ?
 								  "bigJumpLeft" : "bigJumpRight"));
 		}
 		else{
-			this->setDisplayFrame(CCSpriteFrameCache::sharedSpriteFrameCache()
-								  ->spriteFrameByName(m_faceDir == Common::LEFT ?
+			this->setSpriteFrame(SpriteFrameCache::getInstance()
+								  ->getSpriteFrameByName(m_faceDir == common::LEFT ?
 								  "smallJumpLeft" : "smallJumpRight"));
 		}
 		return;
@@ -129,25 +142,25 @@ void Mario::updateStatus(){
 
 	if (_speedX < 0){
 
-		runAction(CCRepeatForever::create(
-			CCAnimate::create(CCAnimationCache::sharedAnimationCache()
-			->animationByName(_isBig ? "bigMoveLeftAnimation" : "smallMoveLeftAnimation"))));
+		runAction(RepeatForever::create(
+			Animate::create(AnimationCache::getInstance()
+			->getAnimation(_state != State::Small ? "bigMoveLeftAnimation" : "smallMoveLeftAnimation"))));
 	}
 	else if (_speedX>0){
 
-		runAction(CCRepeatForever::create(
-			CCAnimate::create(CCAnimationCache::sharedAnimationCache()
-			->animationByName(_isBig ? "bigMoveRightAnimation" : "smallMoveRightAnimation"))));
+		runAction(RepeatForever::create(
+			Animate::create(AnimationCache::getInstance()
+			->getAnimation(_state != State::Small ? "bigMoveRightAnimation" : "smallMoveRightAnimation"))));
 	}
 	else{
 
-		if (m_faceDir == Common::LEFT){
+		if (m_faceDir == common::LEFT){
 
-			this->setDisplayFrameWithAnimationName(_isBig ? "bigMoveLeftAnimation" : "smallMoveLeftAnimation", 0);
+			this->setDisplayFrameWithAnimationName(_state != State::Small ? "bigMoveLeftAnimation" : "smallMoveLeftAnimation", 0);
 		}
 		else {
 
-			this->setDisplayFrameWithAnimationName(_isBig ? "bigMoveRightAnimation" : "smallMoveRightAnimation", 0);
+			this->setDisplayFrameWithAnimationName(_state != State::Small ? "bigMoveRightAnimation" : "smallMoveRightAnimation", 0);
 		}
 
 	}
@@ -168,11 +181,11 @@ bool Mario::canMoveDown(float dt){
 		return false;
 
 
-	CCRect rcMario(boundingBox().origin.x, boundingBox().origin.y,
-				   boundingBox().size.width - 1, boundingBox().size.height - 1);
+	Rect rcMario(getBoundingBox().origin.x, getBoundingBox().origin.y,
+				   getBoundingBox().size.width - 1, getBoundingBox().size.height - 1);
 	Vec2 ptMario = getPosition();
 
-	CCTMXTiledMap* map = getMap();
+	TMXTiledMap* map = getMap();
 	Vec2 ptMarioWorld = map->convertToWorldSpace(ptMario);
 	Vec2 pts[3];
 
@@ -182,26 +195,26 @@ bool Mario::canMoveDown(float dt){
 	}
 	//判断是否出界
 	if (minY < 0){
+		
 		return true;
 	}
 	//向下
-	pts[0] = ccp(rcMario.getMinX(), minY);
-	pts[1] = ccp(rcMario.getMidX(), minY);
-	pts[2] = ccp(rcMario.getMaxX(), minY);
+	pts[0] = Vec2(rcMario.getMinX(), minY);
+	pts[1] = Vec2(rcMario.getMidX(), minY);
+	pts[2] = Vec2(rcMario.getMaxX(), minY);
 
 	for (int i = 0; i < 3; ++i){
-		Vec2 ptTile = Common::pointToMap(map, pts[i]);
+		Vec2 ptTile = myutil::bLGLPointToTile(pts[i], map);
 
 		//墙,水管,地板
 		static const char *layerName[] = {
 			"block",
 			"pipe",
-			"land",
-
+			"land"
 		};
 		for (int j = 0; j < sizeof(layerName) / sizeof(*layerName); ++j){
-			CCTMXLayer* layer = map->layerNamed(layerName[j]);
-			int gid = layer->tileGIDAt(ptTile);
+			TMXLayer* layer = map->getLayer(layerName[j]);
+			int gid = layer->getTileGIDAt(ptTile);
 			if (gid){
 				//有东西挡住了
 				return false;
@@ -215,11 +228,11 @@ bool Mario::canMoveDown(float dt){
 bool Mario::canMoveUp(float dt){
 	if (_isDead || _isAutoRunning)
 		return false;
-	CCRect rcMario(boundingBox().origin.x, boundingBox().origin.y,
-				   boundingBox().size.width - 1, boundingBox().size.height - 1);
+	Rect rcMario(getBoundingBox().origin.x, getBoundingBox().origin.y,
+				   getBoundingBox().size.width - 1, getBoundingBox().size.height - 1);
 	Vec2 ptMario = getPosition();
 
-	CCTMXTiledMap* map = getMap();
+	TMXTiledMap* map = getMap();
 	Vec2 ptMarioWorld = map->convertToWorldSpace(ptMario);
 	Vec2 pts[3];
 
@@ -229,12 +242,12 @@ bool Mario::canMoveUp(float dt){
 	if (maxY > map->getContentSize().height)
 		return true;
 
-	pts[0] = ccp(rcMario.getMinX(), maxY);
-	pts[1] = ccp(rcMario.getMidX(), maxY);
-	pts[2] = ccp(rcMario.getMaxX(), maxY);
+	pts[0] = Vec2(rcMario.getMinX(), maxY);
+	pts[1] = Vec2(rcMario.getMidX(), maxY);
+	pts[2] = Vec2(rcMario.getMaxX(), maxY);
 
 	for (int i = 0; i < 3; ++i){
-		Vec2 ptTile = Common::pointToMap(map, pts[i]);
+		Vec2 ptTile = myutil::bLGLPointToTile(pts[i],map);
 
 		//墙,水管,地板
 		static const char *layerName[] = {
@@ -243,8 +256,8 @@ bool Mario::canMoveUp(float dt){
 			"land"
 		};
 		for (int j = 0; j < sizeof(layerName) / sizeof(*layerName); ++j){
-			CCTMXLayer* layer = map->layerNamed(layerName[j]);
-			int gid = layer->tileGIDAt(ptTile);
+			TMXLayer* layer = map->getLayer(layerName[j]);
+			int gid = layer->getTileGIDAt(ptTile);
 			if (gid){
 				//有东西挡住了
 
@@ -262,11 +275,11 @@ bool Mario::canMoveUp(float dt){
 bool Mario::canMoveHorizontally(float dt){
 	if (_isDead || _isAutoRunning)
 		return false;
-	CCRect rcMario(boundingBox().origin.x, boundingBox().origin.y,
-				   boundingBox().size.width - 1, boundingBox().size.height - 1);
+	Rect rcMario(getBoundingBox().origin.x, getBoundingBox().origin.y,
+				   getBoundingBox().size.width - 1, getBoundingBox().size.height - 1);
 	Vec2 ptMario = getPosition();
 
-	CCTMXTiledMap* map = getMap();
+	TMXTiledMap* map = getMap();
 	Vec2 ptMarioWorld = map->convertToWorldSpace(ptMario);
 	Vec2 pts[3];
 
@@ -286,21 +299,21 @@ bool Mario::canMoveHorizontally(float dt){
 	if (_speedX < 0){
 		//向左走
 		float minX = rcMario.getMinX() + _speedX*dt;
-		pts[0] = ccp(minX, midY);
-		pts[1] = ccp(minX, maxY);
-		pts[2] = ccp(minX, rcMario.getMinY());
+		pts[0] = Vec2(minX, midY);
+		pts[1] = Vec2(minX, maxY);
+		pts[2] = Vec2(minX, rcMario.getMinY());
 
 	}
 	else{
 		//向右走
 		float maxX = rcMario.getMaxX() + _speedX*dt;
-		pts[0] = ccp(maxX, midY);
-		pts[1] = ccp(maxX, maxY);
-		pts[2] = ccp(maxX, rcMario.getMinY());
+		pts[0] = Vec2(maxX, midY);
+		pts[1] = Vec2(maxX, maxY);
+		pts[2] = Vec2(maxX, rcMario.getMinY());
 	}
 
 	for (int i = 0; i < 3; ++i){
-		Vec2 ptTile = Common::pointToMap(map, pts[i]);
+		Vec2 ptTile = myutil::bLGLPointToTile(pts[i], map);
 
 		//墙,水管,地板
 		static const char *layerName[] = {
@@ -309,8 +322,8 @@ bool Mario::canMoveHorizontally(float dt){
 			"land"
 		};
 		for (int j = 0; j < sizeof(layerName) / sizeof(*layerName); ++j){
-			CCTMXLayer* layer = map->layerNamed(layerName[j]);
-			int gid = layer->tileGIDAt(ptTile);
+			TMXLayer* layer = map->getLayer(layerName[j]);
+			int gid = layer->getTileGIDAt(ptTile);
 			if (gid){
 				//有东西挡住了
 				return false;
@@ -325,14 +338,14 @@ TMXTiledMap* Mario::getMap(){
 	return (TMXTiledMap*)getParent();
 }
 
-//给马里奥水平方向的速度
-void Mario::moveHorizontal(Common::Direction dir){
+
+void Mario::moveHorizontal(common::Direction dir){
 	if (_isDead || _isAutoRunning)
 		return;
 
 	if (!_speedX){
 
-		if (dir == Common::LEFT){
+		if (dir == common::LEFT){
 			_speedX = -_speed_const;
 		}
 		else{
@@ -366,6 +379,11 @@ void Mario::jump(int initV){
 }
 
 void Mario::moveVerticalCheck(float dt){
+	if (getPositionY() < -100){
+		//mario 死亡
+		this->die(true);
+		return;
+	}
 
 	//判断是否可以自由落体
 	if (!_isFly){
@@ -373,6 +391,8 @@ void Mario::moveVerticalCheck(float dt){
 		if (canMoveDown(dt)){
 			//没有东西挡住,自由下落
 			this->setPositionY(getPositionY() + dt*_speedY);
+			CCLOG("pos y=%f",getPositionY());
+			
 			_isFly = true;
 
 		}
@@ -412,7 +432,7 @@ void Mario::moveVerticalCheck(float dt){
 
 }
 
-//水平移动检测
+
 void Mario::moveHorizontalCheck(float dt){
 	if (!_speedX)
 		return;
@@ -420,7 +440,7 @@ void Mario::moveHorizontalCheck(float dt){
 		return;
 	this->setPositionX(getPositionX() + _speedX*dt);
 	if (_speedX > 0){
-		CCNode* node = getParent();
+		Node* node = getParent();
 		Vec2 ptWorld = node->convertToWorldSpace(getPosition());
 
 		if (!_isAutoRunning&&ptWorld.x > winSize.width / 2){
@@ -428,7 +448,7 @@ void Mario::moveHorizontalCheck(float dt){
 		}
 	}
 
-	//m_speed = 0;
+	
 }
 
 void Mario::setDead(bool isDead){
@@ -437,6 +457,7 @@ void Mario::setDead(bool isDead){
 
 
 void Mario::die(bool realDead){
+	
 	if (isDead())
 		return;
 
@@ -483,9 +504,8 @@ void Mario::die(bool realDead){
 	else{
 		//碰到怪先变小
 
-		if (_isBig){
-			_isBig = false;
-			_canFire = false;
+		if (_state!=State::Small){
+			_state = State::Small;
 			this->beginGodMode();
 			this->updateStatus();
 		}
@@ -503,23 +523,34 @@ bool Mario::isDead(){
 	return _isDead;
 }
 
-//顶到东西处理
 void Mario::hitSomething(TMXLayer * layer, int gid, Vec2 ptTile){
-	if (std::string(layer->getLayerName()) != "block")
-		return;
-	Sprite* sprite = layer->tileAt(ptTile);
-	CallFuncN *callfunc = CallFuncN::create(this, CC_CALLFUNCN_SELECTOR(Mario::checkHitMushroomCallback));
-	JumpBy*  by = JumpBy::create(0.3f, Vec2(0, 0), 12, 1);
-	sprite->runAction(Sequence::create(by, callfunc, nullptr));
+	
+	if (std::string(layer->getLayerName()) == "block"){
+		//顶到砖头了,看砖里有没有蘑菇
+		Sprite* sprite = layer->getTileAt(ptTile);
+		auto func = std::bind(&Mario::checkHitMushroomCallback,this,std::placeholders::_1);
+		CallFuncN *callfunc = CallFuncN::create(func);
+		JumpBy*  by = JumpBy::create(0.3f, Vec2(0, 0), 12, 1);
+		sprite->runAction(Sequence::create(by, callfunc, nullptr));
+		
+	}
+	else{
+		
+
+	}
+
+	
+	
 }
 
-void Mario::checkHitMushroomCallback(CCNode* node){
+void Mario::checkHitMushroomCallback(Node* node){
 
 	SceneGame* game = dynamic_cast<SceneGame*>(getMap()->getParent());
 	if (!game){
 		CCLOG_DYNAMIC_ERR;
 		return;
 	}
+
 	//那块砖
 	Rect rcNode = node->getBoundingBox();
 	rcNode.size = rcNode.size - Size(1, 1);
@@ -545,7 +576,7 @@ void Mario::checkHitMushroomCallback(CCNode* node){
 
 void Mario::eatMushroom(Item::ItemType type){
 	if (type == Item::IT_MUSHROOMREWARD)
-		_isBig = true;
+		_state=State::Big;
 }
 
 void Mario::beginGodMode(float dt){
@@ -571,13 +602,13 @@ void Mario::autoRun(){
 
 
 	//自动向前走
-	scheduleOnce(schedule_selector(Mario::beginAutoMoveRightCallback), 1.5f);
+	scheduleOnce(CC_SCHEDULE_SELECTOR(Mario::beginAutoMoveRightCallback), 1.5f);
 
 }
 
 void Mario::beginAutoMoveRightCallback(float dt){
 	//自动向前走
-	schedule(schedule_selector(Mario::autoMoveRightCallback));
+	schedule(CC_SCHEDULE_SELECTOR(Mario::autoMoveRightCallback));
 
 }
 void Mario::autoMoveRightCallback(float dt){

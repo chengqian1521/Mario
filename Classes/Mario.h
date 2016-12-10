@@ -7,9 +7,16 @@
 class Mario :public Sprite
 {
 public:
+
+	enum State
+	{
+		Small,
+		Big,
+		CanFire
+	};
 	
 	static Mario* getInstance();
-	bool init();
+	
 
 	TMXTiledMap*   getMap();
 
@@ -18,15 +25,13 @@ public:
 	void jump(int initV);
 
 	//给马里奥水平方向的速度
-	void moveHorizontal(Common::Direction dir);
+	void moveHorizontal(common::Direction dir);
 
-	//在帧循环中垂直速度检测,如果有速度,则移动
+	//在帧循环中速度检测,如果有速度,则移动
 	void moveVerticalCheck(float dt);
-	//在帧循环中水平速度检测,如果有速度,则移动
 	void moveHorizontalCheck(float dt);
 
 	
-
 	//更新马里奥实际状态
 	void updateStatus();
 
@@ -39,7 +44,7 @@ public:
 
 
 	//顶到东西处理
-	void hitSomething(CCTMXLayer* layer, int gid,Vec2 ptTile);
+	void hitSomething(TMXLayer* layer, int gid,Vec2 ptTile);
 	
 
 	
@@ -48,7 +53,7 @@ public:
 	void die(bool realDead = false);
 	
 	void eatMushroom(Item::ItemType type);
-	void checkHitMushroomCallback(CCNode* node);
+	void checkHitMushroomCallback(Node* node);
 
 	void beginGodMode(float dt=2.0f);
 	
@@ -72,19 +77,23 @@ public:
 	bool isGodMode();
 private:
 	Mario(){}
+	bool init();
+	void initResourceCache();
+
+
 protected:
 	//status
 	static Mario * sm_mario;
-	Common::Direction  m_faceDir;//静止时脸的朝向
-	int     _speed_const;	//先假定水平方向为匀速
-	int		_speedX;		//水平方向速度,当前的速度
-	int		_speedY;		//向上的速度,当前的速度
+	common::Direction  m_faceDir;//静止时脸的朝向
+	int     _speed_const;		//先假定水平方向为匀速
+	int		_speedX;			//水平方向速度,当前的速度
+	int		_speedY;			//向上的速度,当前的速度
 	
 	bool    _isFly;
-	bool    _isGodMode;	//被敌人撞击后得到短暂的无敌模式
+	bool    _isGodMode;			//被敌人撞击后得到短暂的无敌模式
 	int		_life;
-	bool	_canFire;
-	bool	_isBig;
+	CC_SYNTHESIZE(State, _state, State);
+	
 	bool	_isDead;
 	bool	_isAutoRunning;
 	bool    _isOnLadder;

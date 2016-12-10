@@ -23,10 +23,8 @@ public:
 	void checkMarioTouchEndPointCallback(float dt);
 	void gameOver();
 
-	
-
 private:
-	
+	bool init(int level);
 	void addMap();
 	void addCtrlButton();
 	void addMapObjectGroup();
@@ -34,14 +32,14 @@ private:
 
 
 	/*override*/
-	bool init(int level);
-	void onEnter()override;
-	void onExit()override;
+	void onEnter()	override;
+	void onExit()	override;
 	void update(float delta)override;
 
 
 	void moveMarioCheck(float delta);
 	void marioEatCoinCheck(float delta);
+	void marioEatHideMushroomCheck();
 
 public:
 	TMXTiledMap*    _map;
@@ -57,7 +55,7 @@ public:
 	Texture2D             *_textureDirLeft;
 
 	Sprite                *_menuShow;
-	Common::Direction      _menuDir;
+	common::Direction      _menuDir;
 	std::set<Item*>        _items;
 	std::list<Item*>       _mushrooms;
 };

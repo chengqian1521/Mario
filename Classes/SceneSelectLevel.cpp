@@ -21,7 +21,7 @@ bool SceneSelectLevel::init(){
 	int  viewWidth = winSize.width*.6f;
 	for (int i = 0; i <ALL_LEVEL_NUM; ++i){
 
-		Common::format(finename, "select", i+1, ".jpg");
+		myutil::format(finename, "select", i+1, ".jpg");
 
 		Sprite* spr = Sprite::create(finename);
 		
@@ -50,16 +50,13 @@ bool SceneSelectLevel::init(){
 	};
 	listener->onTouchEnded = [&](Touch* touch, Event*){
 			if (isClick(touch)){
-				
 				Vec2 pt = _view->getInnerContainer()->convertTouchToNodeSpace(touch);
 				Sprite * clickSpr;
 				for (int i = 0; i < ALL_LEVEL_NUM; ++i){
 					clickSpr = (Sprite *)_view->getChildByTag(1000 + i);
-					if (clickSpr->boundingBox().containsPoint(pt)){
+					if (clickSpr->getBoundingBox().containsPoint(pt)){
 						_level = i + 1;
-						
 						Director::getInstance()->replaceScene(SceneGame::create(_level));
-						
 						break;
 					}
 					
@@ -102,7 +99,7 @@ void SceneSelectLevel::onExit(){
 	_eventDispatcher->removeEventListener(_listener);
 }
 void SceneSelectLevel::backItemCallback(Ref*){
-
+	
 	Director::getInstance()->replaceScene(SceneStart::create());
 }
 

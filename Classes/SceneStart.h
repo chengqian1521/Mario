@@ -8,6 +8,7 @@ public:
 
 private:
 	bool init();
+	void addCtrlMenu();
 	void startCallback(Ref*);
 	void setupCallback(Ref*);
 	void quitCallback(Ref*);

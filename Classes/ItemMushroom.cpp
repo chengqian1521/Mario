@@ -23,7 +23,7 @@ bool ItemMushroom::init(ValueMap& map)
 	setPositionByProperty(map);
 	
 	setVisible(false);
-	this->setDisplayFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("rewardMushroom"));
+	this->setDisplayFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("rewardMushroom"));
 	setZOrder(0);
 	_state = SLEEP;
 	_speedY = 0;
@@ -37,8 +37,8 @@ void ItemMushroom::wakeup(){
 
 void ItemMushroom::updateStatus(){
 	if (_state == GROW){
-		CCMoveBy* by = CCMoveBy::create(1.0f, ccp(0, 16));
-		CCCallFunc* callfunc = CCCallFunc::create(this, callfunc_selector(ItemMushroom::afterGrowCallback));
+		MoveBy* by = MoveBy::create(1.0f, ccp(0, 16));
+		CallFunc* callfunc = CallFunc::create(this, CC_CALLFUNC_SELECTOR(ItemMushroom::afterGrowCallback));
 		runAction(CCSequence::create(by,callfunc,NULL));
 	}
 	else if (_state == MOVE){
@@ -55,16 +55,16 @@ void ItemMushroom::afterGrowCallback(){
 void ItemMushroom::collisionCheck(float dt){
 	if (_state != MOVE)
 		return;
-	if (Mario::getInstance()->boundingBox().intersectsRect(this->boundingBox())){
+	if (Mario::getInstance()->getBoundingBox().intersectsRect(this->getBoundingBox())){
 		Mario::getInstance()->eatMushroom(this->_type);
-		
-		removeFromParent();
-		
+		removeFromParent();		
 	}
 }
 
 void ItemMushroom::update(float dt){
-	if (this->_state== State::MOVE)
-			moveCheck(dt);
+	if (this->_state != State::MOVE)
+		return;
+
+	moveCheck(dt);
 	collisionCheck(dt);
 }

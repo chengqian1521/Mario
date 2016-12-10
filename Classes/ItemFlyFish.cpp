@@ -31,7 +31,10 @@ bool ItemFlyFish::init(ValueMap& map)
 	
 	return true;
 }
-
+void ItemFlyFish::update(float dt){
+	collisionCheck(dt);
+	moveCheck(dt);
+}
 void ItemFlyFish::moveCheck(float dt){
 	if (Mario::getInstance()->getPositionX() < getPositionX())
 		return;
@@ -78,7 +81,7 @@ void ItemFlyFish::collisionCheck(float dt){
 void ItemFlyFish::updateStatus(){
 	
 	
-	CCAnimation* ani = CCAnimationCache::sharedAnimationCache()
+	Animation* ani = AnimationCache::sharedAnimationCache()
 		->animationByName(_speedX>0 ? "flyFishRight" : "flyFishLeft");
 	this->runAction(CCRepeatForever::create(CCAnimate::create(ani)));
 }

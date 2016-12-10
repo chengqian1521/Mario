@@ -87,7 +87,7 @@ void Item::setPositionByProperty(const ValueMap& dict){
 bool Item::init()
 {
 	Sprite::init();
-	setLocalZOrder(Common::ZO_MUSHROOM);
+	setLocalZOrder(common::ZO_MUSHROOM);
 	
 	return true;
 }

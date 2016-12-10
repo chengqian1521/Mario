@@ -56,33 +56,33 @@ void ItemFireString::collisionCheck(float dt){
 	int angle = getRotation();
 	angle %= 360;
 	if (angle > 270){
-		fireString.p1 = ccp(rcItem.getMaxX(), rcItem.getMinY());
-		fireString.p2 = ccp(rcItem.getMinX(),rcItem.getMaxY());
+		fireString.p1 = Vec2(rcItem.getMaxX(), rcItem.getMinY());
+		fireString.p2 = Vec2(rcItem.getMinX(),rcItem.getMaxY());
 	}
 	else if (angle > 180){
-		fireString.p1 = ccp(rcItem.getMaxX(), rcItem.getMaxY());
-		fireString.p2 = ccp(rcItem.getMinX(), rcItem.getMinY());
+		fireString.p1 = Vec2(rcItem.getMaxX(), rcItem.getMaxY());
+		fireString.p2 = Vec2(rcItem.getMinX(), rcItem.getMinY());
 
 	}
 	else if (angle > 90){
-		fireString.p1 = ccp(rcItem.getMinX(), rcItem.getMaxY());
-		fireString.p2 = ccp(rcItem.getMaxX(), rcItem.getMinY());
+		fireString.p1 = Vec2(rcItem.getMinX(), rcItem.getMaxY());
+		fireString.p2 = Vec2(rcItem.getMaxX(), rcItem.getMinY());
 
 	}
 	else
 	{
-		fireString.p1 = ccp(rcItem.getMinX(), rcItem.getMinY());
-		fireString.p2 = ccp(rcItem.getMaxX(), rcItem.getMaxY());
+		fireString.p1 =Vec2(rcItem.getMinX(), rcItem.getMinY());
+		fireString.p2 =Vec2(rcItem.getMaxX(), rcItem.getMaxY());
 
 	}
 	//CCLOG("len%g", fireString.p1.getDistance(fireString.p2));
-	CCRect rcMario = Mario::getInstance()->boundingBox();
+	Rect rcMario = Mario::getInstance()->boundingBox();
 	//marioµÄÏß¶Î
 	Line lineMario[2];
-	lineMario[0].p1 = ccp(rcMario.getMinX(), rcMario.getMinY());
-	lineMario[0].p2 = ccp(rcMario.getMaxX(), rcMario.getMaxY());
-	lineMario[1].p1 = ccp(rcMario.getMinX(), rcMario.getMaxY());
-	lineMario[1].p2 = ccp(rcMario.getMaxX(), rcMario.getMinY());
+	lineMario[0].p1 = Vec2(rcMario.getMinX(), rcMario.getMinY());
+	lineMario[0].p2 = Vec2(rcMario.getMaxX(), rcMario.getMaxY());
+	lineMario[1].p1 = Vec2(rcMario.getMinX(), rcMario.getMaxY());
+	lineMario[1].p2 = Vec2(rcMario.getMaxX(), rcMario.getMinY());
 
 	for (int i = 0; i < 2; ++i){
 		if (ccpSegmentIntersect(lineMario[i].p1, lineMario[i].p2, fireString.p1, fireString.p2)){

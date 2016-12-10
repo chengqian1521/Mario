@@ -19,7 +19,7 @@ SceneGame* SceneGame::create(int level){
 }
 bool SceneGame::init(int level){
 	Scene::init();
-	_menuDir = Common::NONE;
+	_menuDir = common::NONE;
 	_level = level;
 	_finalPoint = nullptr;
 	
@@ -33,18 +33,15 @@ bool SceneGame::init(int level){
 
 void SceneGame::addMap(){
 	char mapName[32];
-	Common::format(mapName, "MarioMap", _level, ".tmx");
+	myutil::format(mapName, "MarioMap", _level, ".tmx");
 	_map = TMXTiledMap::create(mapName);
 	addChild(_map);
 	_map->setPosition(_map->getPosition() + Vec2(0, winSize.height - _map->getContentSize().height));
 
 }
 void SceneGame::addCtrlButton(){
-
-
-
 	//增加控制面板背景
-	Sprite* crtlBG = Sprite::createWithTexture(TextureCache::getInstance()->addImage("controlUI.png"));
+	Sprite* crtlBG = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->addImage("controlUI.png"));
 	crtlBG->setPosition(Vec2(0, 0));
 	crtlBG->setAnchorPoint(Vec2(0, 0));
 	addChild(crtlBG);
@@ -53,9 +50,9 @@ void SceneGame::addCtrlButton(){
 	MenuCtrl * dirMenu = MenuCtrl::create();
 	addChild(dirMenu);
 
-	_textureDirNone = TextureCache::getInstance()->addImage("backKeyImage.png");
-	_textureDirLeft = TextureCache::getInstance()->addImage("backKeyLeft.png");
-	_textureDirRight = TextureCache::getInstance()->addImage("backKeyRight.png");
+	_textureDirNone = Director::getInstance()->getTextureCache()->addImage("backKeyImage.png");
+	_textureDirLeft = Director::getInstance()->getTextureCache()->addImage("backKeyLeft.png");
+	_textureDirRight = Director::getInstance()->getTextureCache()->addImage("backKeyRight.png");
 
 	//方向控制键效果
 	_menuShow = Sprite::createWithTexture(_textureDirNone);
@@ -96,8 +93,8 @@ void SceneGame::addCtrlButton(){
 	Menu* jumpMenu = Menu::create();
 	addChild(jumpMenu);
 
-	Texture2D* textureAB_normal = TextureCache::getInstance()->addImage("AB_normal.png");
-	Texture2D* textureAB_select = TextureCache::getInstance()->addImage("AB_select.png");
+	Texture2D* textureAB_normal = Director::getInstance()->getTextureCache()->addImage("AB_normal.png");
+	Texture2D* textureAB_select = Director::getInstance()->getTextureCache()->addImage("AB_select.png");
 	auto jumpNormal = Sprite::createWithTexture(textureAB_normal);
 	auto jumpSelect = Sprite::createWithTexture(textureAB_select);
 	MenuItemSprite* jumpItem = MenuItemSprite::create(jumpNormal,
@@ -125,9 +122,8 @@ void SceneGame::addMapObjectGroup(){
 			_mario->setDead(false);
 			_mario->setPosition(Vec2(x.asInt(), y.asInt() - _map->getTileSize().height));
 			_mario->ignoreAnchorPointForPosition(true);
-			_mario->setLocalZOrder(Common::ZO_MARIO);
-			
-			_map->addChild(_mario);
+			_mario->setLocalZOrder(common::ZO_MARIO);
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  			_map->addChild(_mario);
 		}
 		else{
 			
@@ -158,43 +154,43 @@ void SceneGame::addAnimationToCache(){
 	//加载蘑菇怪资源
 	//加载动画资源
 	{
-		Animation* animation = Common::createAnimation("Mushroom0.png", 0, 2,
+		Animation* animation = myutil::createAnimation("Mushroom0.png", 0, 2,
 															  16, 0.1f);
 		AnimationCache::getInstance()->addAnimation(animation, "mushroomMoving");
 
-		SpriteFrame* dead1 = Common::getSpriteFrame("Mushroom0.png", 2, 16);
-		SpriteFrame* dead2 = Common::getSpriteFrame("Mushroom0.png", 2, 16);
+		SpriteFrame* dead1 = myutil::getSpriteFrame("Mushroom0.png", 2, 16);
+		SpriteFrame* dead2 = myutil::getSpriteFrame("Mushroom0.png", 2, 16);
 
 		SpriteFrameCache::getInstance()->addSpriteFrame(dead1, "mushroomDead1");
 		SpriteFrameCache::getInstance()->addSpriteFrame(dead2, "mushroomDead2");
 	}
 	{
 		//加载乌龟的动画资源
-		Animation* animation1 = Common::createAnimation("tortoise0.png", 2, 2,
+		Animation* animation1 = myutil::createAnimation("tortoise0.png", 2, 2,
 															  18, 0.4f);
 		AnimationCache::getInstance()->addAnimation(animation1, "tortoiseLeftMoving");
 
-		Animation* animation2 = Common::createAnimation("tortoise0.png", 4, 2,
+		Animation* animation2 = myutil::createAnimation("tortoise0.png", 4, 2,
 														 18, 0.4f);
 		AnimationCache::getInstance()->addAnimation(animation2, "tortoiseRightMoving");
 
-		Animation* animation3 = Common::createAnimation("tortoise0.png", 8, 2,
+		Animation* animation3 = myutil::createAnimation("tortoise0.png", 8, 2,
 														  18, 0.4f);
 		AnimationCache::getInstance()->addAnimation(animation3, "tortoiseDead");
 
-		SpriteFrame* dead1 = Common::getSpriteFrame("tortoise0.png", 2, 16);
-		SpriteFrame* dead2 = Common::getSpriteFrame("tortoise0.png", 2, 16);
+		SpriteFrame* dead1 = myutil::getSpriteFrame("tortoise0.png", 2, 16);
+		SpriteFrame* dead2 = myutil::getSpriteFrame("tortoise0.png", 2, 16);
 
 		
 	}
 
 	{
 		//加载飞天乌龟的动画资源
-		Animation* animation1 = Common::createAnimation("tortoise0.png", 0, 2,
+		Animation* animation1 = myutil::createAnimation("tortoise0.png", 0, 2,
 														  18, 0.4f);
 		AnimationCache::getInstance()->addAnimation(animation1, "tortoiseFlyLeft");
 
-		Animation* animation2 = Common::createAnimation("tortoise0.png", 6, 2,
+		Animation* animation2 = myutil::createAnimation("tortoise0.png", 6, 2,
 														  18, 0.4f);
 		AnimationCache::getInstance()->addAnimation(animation2, "tortoiseFlyRight");
 
@@ -203,22 +199,22 @@ void SceneGame::addAnimationToCache(){
 	}
 	{
 		//加载花资源
-		Animation* animation = Common::createAnimation("flower0.png", 0, 2,
+		Animation* animation = myutil::createAnimation("flower0.png", 0, 2,
 														 16, 0.5f);
 		AnimationCache::getInstance()->addAnimation(animation, "flowerShow");
 
 	}
 	{
-		SpriteFrame* frame=	Common::getSpriteFrame("rewardMushroomSet.png", 0, 16);
+		SpriteFrame* frame=	myutil::getSpriteFrame("rewardMushroomSet.png", 0, 16);
 		SpriteFrameCache::getInstance()->addSpriteFrame(frame, "rewardMushroom");
 	}
 	{
 		
-		Animation* animation1 = Common::createAnimation("flyFishLeft.png", 0, 6,
+		Animation* animation1 = myutil::createAnimation("flyFishLeft.png", 0, 6,
 														  16, 0.4f);
 		AnimationCache::getInstance()->addAnimation(animation1, "flyFishLeft");
 
-		Animation* animation2 = Common::createAnimation("flyFishRight.png", 0, 6,
+		Animation* animation2 = myutil::createAnimation("flyFishRight.png", 0, 6,
 														  16, 0.4f);
 		AnimationCache::getInstance()->addAnimation(animation2, "flyFishRight");
 
@@ -226,11 +222,11 @@ void SceneGame::addAnimationToCache(){
 	}
 	{
 		//boss
-		Animation* animation1 = Common::createAnimation("boss.png", 0, 4,
+		Animation* animation1 = myutil::createAnimation("boss.png", 0, 4,
 														  32, 0.4f);
 		AnimationCache::getInstance()->addAnimation(animation1, "bossLeft");
 
-		Animation* animation2 = Common::createAnimation("boss.png", 4, 4,
+		Animation* animation2 = myutil::createAnimation("boss.png", 4, 4,
 														  32, 0.4f);
 		AnimationCache::getInstance()->addAnimation(animation2, "bossRight");
 
@@ -256,8 +252,6 @@ void SceneGame::onExit(){
 void SceneGame::update(float delta){
 	moveMarioCheck(delta);
 	marioEatCoinCheck(delta);
-
-
 }
 void SceneGame::marioEatCoinCheck(float delta){
 	TMXLayer* coinLayer = _map->getLayer("coin");
@@ -271,10 +265,10 @@ void SceneGame::marioEatCoinCheck(float delta){
 	pts[3] = Vec2(rc.getMaxX(), rc.getMaxY());
 	for (int i = 0; i < 4; ++i){
 		
-		Vec2 ptTile = Common::pointToMap(_map, pts[i]);
+		Vec2 ptTile = myutil::bLGLPointToTile(pts[i], _map);
 		if (ptTile.x < 0 || ptTile.y < 0 || ptTile.y >= _map->getMapSize().height)
 			continue;
-		int gid = coinLayer->tileGIDAt(ptTile);
+		int gid = coinLayer->getTileGIDAt(ptTile);
 		if (gid){
 			//播放吃金币的声音
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("EatCoin.wma");
@@ -282,14 +276,29 @@ void SceneGame::marioEatCoinCheck(float delta){
 		}
 	}
 }
+void SceneGame::marioEatHideMushroomCheck(){
+	if (_mario->getSpeedY() > 5){
+
+		for (auto mushroom : _mushrooms){
+			Rect rect = mushroom->getBoundingBox();
+			if (rect.intersectsRect(this->getBoundingBox())){
+				//顶到隐藏的蘑菇了
+				
+			}
+		}
+	}
+
+	
+
+}
 void SceneGame::moveRightCallback(Ref*){
 	_menuShow->setTexture(_textureDirRight);
-	_menuDir = Common::RIGHT;
+	_menuDir = common::RIGHT;
 }
 
 void SceneGame::moveLeftCallback(Ref*){
 	_menuShow->setTexture(_textureDirLeft);
-	_menuDir = Common::LEFT;
+	_menuDir = common::LEFT;
 }
 
 void SceneGame::moveMarioCheck(float dt){
@@ -297,25 +306,25 @@ void SceneGame::moveMarioCheck(float dt){
 #ifdef WIN32
 	short key;
 	key = GetKeyState('A');
-	if (key < 0)_menuDir = Common::LEFT;
+	if (key < 0)_menuDir = common::LEFT;
 	
 	key = GetKeyState('D');
-	if (key < 0)_menuDir = Common::RIGHT;
+	if (key < 0)_menuDir = common::RIGHT;
 	key = GetKeyState('J');
 	if (key < 0)jumpKeyCallback(NULL);
 #endif
 
-	Common::Direction dir = _menuDir;
+	common::Direction dir = _menuDir;
 	switch (dir)
 	{
 	
-	case Common::RIGHT:
-	case Common::LEFT:
+	case common::RIGHT:
+	case common::LEFT:
 		_mario->moveHorizontal(dir);
-		_menuDir = Common::NONE;
+		_menuDir = common::NONE;
 		break;
 	
-	case Common::NONE:
+	case common::NONE:
 		_menuShow->setTexture(_textureDirNone);
 		_mario->stop();
 		break;
@@ -343,7 +352,7 @@ void SceneGame::checkMarioTouchPole(float dt){
 	
 	auto rcMario = _mario->boundingBox();
 	Vec2 pt = Vec2(rcMario.getMidX(), rcMario.getMaxY());
-	Vec2 ptTile = Common::pointToMap(_map, pt);
+	Vec2 ptTile = myutil::bLGLPointToTile(pt, _map);
 	Rect mapSizeRect(Vec2(0,0),_map->getMapSize()-Size(1,1));
 	
 	
@@ -352,7 +361,7 @@ void SceneGame::checkMarioTouchPole(float dt){
 
 	TMXLayer* layer = _map->getLayer("flagpole");
 	
-	if (layer->tileGIDAt(ptTile)){
+	if (layer->getTileGIDAt(ptTile)){
 		//碰到旗杆了
 		_mario->autoRun();
 		unschedule(CC_SCHEDULE_SELECTOR(SceneGame::checkMarioTouchPole));

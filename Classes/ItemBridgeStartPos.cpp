@@ -33,7 +33,7 @@ void ItemBridgeStartPos::collisionCheck(float dt){
 	//	//ฒ๐วล
 	//	ItemBoss* boss = (ItemBoss*)sm_boss;
 	//	boss->m_status = ItemBoss::DROPPING;
-	//	CCPoint ptTile = Common::pointToMap(getMap(), getPosition());
+	//	CCPoint ptTile = myutil::bLGLPointToTile(getMap(), getPosition());
 	//	CCTMXLayer* layer = getMap()->layerNamed("land");
 	//	for (int i = 0; i < 13; ++i){
 	//		layer->setTileGID(0, ptTile);

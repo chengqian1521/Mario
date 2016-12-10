@@ -12,6 +12,8 @@ public:
 	virtual void moveCheck(float dt);
 	virtual void collisionCheck(float dt);
 
+	virtual void update(float dt) override;
+
 protected:
 	int		m_lorR;
 	float	m_ladderDis;

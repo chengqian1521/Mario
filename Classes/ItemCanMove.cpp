@@ -77,7 +77,7 @@ bool ItemCanMove::canMoveHorizontal(float dt){
 	}
 
 	for (int i = 0; i < 3; ++i){
-		Vec2 ptTile = Common::pointToMap(map, pts[i]);
+		Vec2 ptTile = myutil::bLGLPointToTile(pts[i],map);
 
 		//墙,水管,地板
 		static const char *layerName[] = {
@@ -130,7 +130,7 @@ bool ItemCanMove::canMoveDown(float dt){
 	pts[2] = Vec2(rcItem.getMaxX(), minY);
 
 	for (int i = 0; i < 3; ++i){
-		Vec2 ptTile = Common::pointToMap(map, pts[i]);
+		Vec2 ptTile = myutil::bLGLPointToTile(pts[i], map);
 
 		//墙,水管,地板
 		static const char *layerName[] = {

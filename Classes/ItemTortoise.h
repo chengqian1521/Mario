@@ -28,7 +28,7 @@ protected:
 	int m_initXV;
 	
 	
-						//被马里奥踩了一段时间
+						
 	bool m_bIsDead;
 	State m_state;
 

@@ -40,7 +40,10 @@ bool ItemLadderLR::init(ValueMap& map)
 	m_bIsMarioOnThis = false;
 	return true;
 }
-
+void ItemLadderLR::update(float dt){
+	collisionCheck( dt);
+	moveCheck(dt);
+}
 void ItemLadderLR::moveCheck(float dt){
 	m_dist += dt*_speedX;
 	setPositionX(getPositionX() + dt*_speedX);

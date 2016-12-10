@@ -12,6 +12,7 @@ public:
 	virtual void moveCheck(float dt);
 	virtual void collisionCheck(float dt);
 	void updateStatus();
+	void update(float dt)override;
 
 	
 
