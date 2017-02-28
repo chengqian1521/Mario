@@ -87,7 +87,7 @@ bool ItemCanMove::canMoveHorizontal(float dt){
 		};
 		for (int j = 0; j < sizeof(layerName) / sizeof(*layerName); ++j){
 			TMXLayer* layer = map->getLayer(layerName[j]);
-			int gid = layer->tileGIDAt(ptTile);
+			int gid = layer->getTileGIDAt(ptTile);
 			if (gid){
 				//有东西挡住了
 				return false;
@@ -140,8 +140,8 @@ bool ItemCanMove::canMoveDown(float dt){
 
 		};
 		for (int j = 0; j < sizeof(layerName) / sizeof(*layerName); ++j){
-			CCTMXLayer* layer = map->layerNamed(layerName[j]);
-			int gid = layer->tileGIDAt(ptTile);
+			TMXLayer* layer = map->getLayer(layerName[j]);
+			int gid = layer->getTileGIDAt(ptTile);
 			if (gid){
 				//有东西挡住了
 				return false;

@@ -23,8 +23,8 @@ bool ItemMushroom::init(ValueMap& map)
 	setPositionByProperty(map);
 	
 	setVisible(false);
-	this->setDisplayFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("rewardMushroom"));
-	setZOrder(0);
+	this->setSpriteFrame(spriteFrameCache->getSpriteFrameByName("rewardMushroom"));
+	setLocalZOrder(0);
 	_state = SLEEP;
 	_speedY = 0;
 	_speedX = 40;
@@ -32,6 +32,7 @@ bool ItemMushroom::init(ValueMap& map)
 }
 void ItemMushroom::wakeup(){
 	_state = GROW;
+	this->setVisible(true);
 	updateStatus();
 }
 

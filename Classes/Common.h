@@ -18,7 +18,21 @@ namespace common
 		ZO_MARIO=1000,
 		ZO_MUSHROOM=100
 	};
+	enum BlockType {
+		common,
+		question,
+		commonGetHard,
+		commonHarfOnRight,
+		commonHarfOnRiLeft,
+		hardHarfOnRight,
+		hardHarfOnRiLeft,
+		Hard,
+		none,
+	};
 	
+
+	BlockType getBlockTypeByGid(int gid);
+	extern BlockType gidTable[];
 };
 
 #endif

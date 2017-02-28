@@ -52,7 +52,7 @@ void ItemMushroomMonster::collisionCheck(float dt){
 		if (Mario::getInstance()->getSpeedY() <= 0 && rcMario.getMinY()>rcItem.getMaxY() - rcItem.size.height / 2){
 			//ÂíÀï°ÂÊ¤Àû
 			this->stopAllActions();
-			this->setDisplayFrame(CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName("mushroomDead1"));
+			this->setSpriteFrame(spriteFrameCache->getSpriteFrameByName("mushroomDead1"));
 			_speedX = 0;
 			this->_isDead = true;
 			

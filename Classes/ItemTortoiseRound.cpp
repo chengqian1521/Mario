@@ -8,7 +8,7 @@ ItemTortoiseRound* ItemTortoiseRound::create(ValueMap& map)
 	}
 	else{
 		delete pRet;
-		pRet = NULL;
+		pRet = nullptr;
 	}
 	return pRet;
 
@@ -58,14 +58,14 @@ void ItemTortoiseRound::moveCheck(float dt){
 	}
 }
 void ItemTortoiseRound::collisionCheck(float dt){
-	CCLOG("%g,%g",getPositionX(),getPositionY());
+	
 	if (!isAppearInWindow())
 		return;
 	if (_bIsGodMode)
 		return;
 	Mario* mario = Mario::getInstance();
-	CCRect rcMario = mario->boundingBox();
-	CCRect rcItem = this->boundingBox();
+	Rect rcMario = mario->getBoundingBox();
+	Rect rcItem = this->getBoundingBox();
 
 	if (rcMario.intersectsRect(rcItem)){
 
@@ -80,15 +80,15 @@ void ItemTortoiseRound::collisionCheck(float dt){
 				//让马里奥弹出去
 				mario->jump(100);
 
-				scheduleOnce(schedule_selector(ItemTortoiseRound::cancelGodModeCallback), 0.2f);
+				scheduleOnce(CC_SCHEDULE_SELECTOR(ItemTortoiseRound::cancelGodModeCallback), 0.2f);
 
 				//过一段时间复活
-				scheduleOnce(schedule_selector(ItemTortoiseRound::autoReLiveCallback), 5.0f);
+				scheduleOnce(CC_SCHEDULE_SELECTOR(ItemTortoiseRound::autoReLiveCallback), 5.0f);
 
 			}
 			else{
 				//马里奥死亡
-				CCLOG("gama_over");
+				
 
 			}
 
@@ -102,7 +102,7 @@ void ItemTortoiseRound::collisionCheck(float dt){
 			m_state = CRAZY;
 			//无敌一段时间
 			_bIsGodMode = true;
-			scheduleOnce(schedule_selector(ItemTortoiseRound::cancelGodModeCallback), 0.2f);
+			scheduleOnce(CC_SCHEDULE_SELECTOR(ItemTortoiseRound::cancelGodModeCallback), 0.2f);
 			//scheduleOnce(schedule_selector(ItemTortoiseRound::autoReLiveCallback), 5.0f);
 
 			updateStatus();
@@ -115,10 +115,10 @@ void ItemTortoiseRound::collisionCheck(float dt){
 				m_state = SLEEP;
 				//无敌一段时间
 				_bIsGodMode = true;
-				scheduleOnce(schedule_selector(ItemTortoiseRound::cancelGodModeCallback), 0.2f);
+				scheduleOnce(CC_SCHEDULE_SELECTOR(ItemTortoiseRound::cancelGodModeCallback), 0.2f);
 
 				//过一段时间复活
-				scheduleOnce(schedule_selector(ItemTortoiseRound::autoReLiveCallback), 0.2f);
+				scheduleOnce(CC_SCHEDULE_SELECTOR(ItemTortoiseRound::autoReLiveCallback), 0.2f);
 
 			}
 			else{
@@ -138,14 +138,14 @@ void ItemTortoiseRound::collisionCheck(float dt){
 void ItemTortoiseRound::updateStatus(){
 	stopAllActions();
 	if (m_state == NORMAL){
-		CCAnimation* ani = CCAnimationCache::sharedAnimationCache()->
-			animationByName(_speedX>0 ? "tortoiseRightMoving" : "tortoiseLeftMoving");
-		runAction(CCRepeatForever::create(CCAnimate::create(ani)));
+		
+		runAction(RepeatForever::create(Animate::create(AnimationCache::getInstance()->
+														getAnimation(_speedX > 0 ? "tortoiseRightMoving" : "tortoiseLeftMoving"))));
 	}
 	else if (m_state == SLEEP || m_state==CRAZY){
-		CCAnimation* ani = CCAnimationCache::sharedAnimationCache()->
-			animationByName("tortoiseDead");
-		runAction(CCRepeatForever::create(CCAnimate::create(ani)));
+		
+		runAction(RepeatForever::create(Animate::create(AnimationCache::getInstance()->
+														getAnimation("tortoiseDead"))));
 
 	}
 }

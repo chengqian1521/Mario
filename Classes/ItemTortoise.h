@@ -15,6 +15,7 @@ public:
 	bool init(ValueMap& map);
 
 	
+	
 	virtual void collisionCheck(float dt);
 	
 	

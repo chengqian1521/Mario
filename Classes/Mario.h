@@ -21,11 +21,10 @@ public:
 	TMXTiledMap*   getMap();
 
 	//给马里奥竖直方向的速度
-	void jump();
-	void jump(int initV);
+	void jump(int initV=300);
 
 	//给马里奥水平方向的速度
-	void moveHorizontal(common::Direction dir);
+	void setHorizontalSpeed(common::Direction dir);
 
 	//在帧循环中速度检测,如果有速度,则移动
 	void moveVerticalCheck(float dt);
@@ -43,8 +42,7 @@ public:
 	bool canMoveHorizontally(float dt);
 
 
-	//顶到东西处理
-	void hitSomething(TMXLayer* layer, int gid,Vec2 ptTile);
+	
 	
 
 	
@@ -53,7 +51,7 @@ public:
 	void die(bool realDead = false);
 	
 	void eatMushroom(Item::ItemType type);
-	void checkHitMushroomCallback(Node* node);
+	
 
 	void beginGodMode(float dt=2.0f);
 	
@@ -72,9 +70,9 @@ public:
 	void reverseSpeedY();
 	void setIsFly(bool isFly);
 	void endAutoRun();
-
 	void setDead(bool isDead);
 	bool isGodMode();
+
 private:
 	Mario(){}
 	bool init();
@@ -84,10 +82,10 @@ private:
 protected:
 	//status
 	static Mario * sm_mario;
-	common::Direction  m_faceDir;//静止时脸的朝向
-	int     _speed_const;		//先假定水平方向为匀速
-	int		_speedX;			//水平方向速度,当前的速度
-	int		_speedY;			//向上的速度,当前的速度
+	common::Direction  m_faceDir;	//静止时脸的朝向
+				
+	Vec2	_speed;					//速度向上为正	
+				
 	
 	bool    _isFly;
 	bool    _isGodMode;			//被敌人撞击后得到短暂的无敌模式

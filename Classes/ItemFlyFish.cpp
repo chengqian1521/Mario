@@ -21,12 +21,11 @@ bool ItemFlyFish::init(ValueMap& map)
 	_type = Item::IT_flyfish;
 	setPositionByProperty(map);
 
-	m_duration = map.at("duration").asInt();
-	m_offsetH = map.at("offsetH").asInt();
-	m_offsetV = map.at("offsetV").asInt();
-	//setVisible(false);
-	//m_speedY = m_offsetV *4;
-	_speedX = m_offsetH;
+	_duration = map.at("duration").asInt();
+	_offsetH  = map.at("offsetH").asInt();
+	_offsetV  = map.at("offsetV").asInt();
+	
+	_speedX      = _offsetH;
 	_alreadlyFly = false;
 	
 	return true;
@@ -44,44 +43,38 @@ void ItemFlyFish::moveCheck(float dt){
 	updateStatus();
 	//贝塞尔曲线运动
 	ccBezierConfig config;
-	config.controlPoint_1.x = CCRANDOM_0_1()*m_offsetH;
-	config.controlPoint_1.y = CCRANDOM_0_1()*m_offsetV;
-	config.controlPoint_2.x = CCRANDOM_0_1()*m_offsetH;
-	config.controlPoint_2.y = CCRANDOM_0_1()*m_offsetV;
-	config.endPosition = ccp(m_offsetH, m_offsetV);
-	CCBezierBy* bezier = CCBezierBy::create(m_duration, config);
+	config.controlPoint_1.x = CCRANDOM_0_1()*_offsetH;
+	config.controlPoint_1.y = CCRANDOM_0_1()*_offsetV;
+	config.controlPoint_2.x = CCRANDOM_0_1()*_offsetH;
+	config.controlPoint_2.y = CCRANDOM_0_1()*_offsetV;
+	config.endPosition = Vec2(_offsetH, _offsetV);
+	BezierBy* bezier = BezierBy::create(_duration, config);
 
 	ccBezierConfig config1;
-	config1.controlPoint_1.x = CCRANDOM_0_1()*m_offsetH;
-	config1.controlPoint_1.y = CCRANDOM_0_1()*m_offsetV;
-	config1.controlPoint_2.x = CCRANDOM_0_1()*m_offsetH;
-	config1.controlPoint_2.y = CCRANDOM_0_1()*m_offsetV;
-	config1.endPosition = ccp(m_offsetH, -m_offsetV);
-	CCBezierBy* bezier1 = CCBezierBy::create(m_duration, config1);
+	config1.controlPoint_1.x = CCRANDOM_0_1()*_offsetH;
+	config1.controlPoint_1.y = CCRANDOM_0_1()*_offsetV;
+	config1.controlPoint_2.x = CCRANDOM_0_1()*_offsetH;
+	config1.controlPoint_2.y = CCRANDOM_0_1()*_offsetV;
+	config1.endPosition = Vec2(_offsetH, -_offsetV);
+	BezierBy* bezier1 = BezierBy::create(_duration, config1);
 
-	CCCallFunc* callfunc = CCCallFunc::create(this, callfunc_selector(ItemFlyFish::removeFromParent));
+	CallFunc* callfunc = CallFunc::create(this, CC_CALLFUNC_SELECTOR(ItemFlyFish::removeFromParent));
 
-	runAction(CCSequence::create(bezier, bezier1, callfunc,NULL));
+	runAction(Sequence::create(bezier, bezier1, callfunc,NULL));
 	_alreadlyFly = true;
-	////水平移动
-	//setPositionX(getPositionX() + dt*m_speedX);
-
-	////竖直方向移动
-	//setPositionY(getPositionY() + dt*m_speedY);
+	
 }
 void ItemFlyFish::collisionCheck(float dt){
 	if (!_alreadlyFly)
 		return;
 	Mario* mario = Mario::getInstance();
-	if (mario->boundingBox().intersectsRect(boundingBox())){
+	if (mario->getBoundingBox().intersectsRect(boundingBox())){
 		mario->die(false);
 	}
 }
 
 void ItemFlyFish::updateStatus(){
-	
-	
-	Animation* ani = AnimationCache::sharedAnimationCache()
-		->animationByName(_speedX>0 ? "flyFishRight" : "flyFishLeft");
-	this->runAction(CCRepeatForever::create(CCAnimate::create(ani)));
+	Animation* ani = AnimationCache::getInstance()
+		->getAnimation(_speedX>0 ? "flyFishRight" : "flyFishLeft");
+	this->runAction(RepeatForever::create(Animate::create(ani)));
 }

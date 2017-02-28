@@ -97,8 +97,9 @@ void Item::onEnter(){
 	
 }
 void Item::onExit(){
-	Sprite::onExit();
+	
 	unscheduleUpdate();
+	Sprite::onExit();
 }
 
 
@@ -112,21 +113,19 @@ bool Item::isAppearInWindow(){
 	Vec2 ptInWorld = map->convertToWorldSpace(ptInMap);
 	return ( ptInWorld.x < winSize.width);
 	
-	
 }
 
-CCTMXTiledMap* Item::getMap(){
-	return (CCTMXTiledMap*)getParent();
+TMXTiledMap* Item::getMap(){
+	return (TMXTiledMap*)getParent();
 }
 bool Item::isOutOfWindow(){
 	Vec2	ptWorld=getMap()->convertToWorldSpace(getPosition());
-	return (ptWorld.x < -winSize.width) || (getPositionY() <= -boundingBox().size.height);
-			
+	return (ptWorld.x < -winSize.width) || (getPositionY() <= -getBoundingBox().size.height);
 }
 
 
 
- void Item::autoDropFlag(){
+void Item::autoDropFlag(){
 
 }
 

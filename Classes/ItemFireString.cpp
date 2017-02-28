@@ -21,7 +21,7 @@ bool ItemFireString::init(ValueMap& map)
 	_type = Item::IT_fire_string;
 	setPositionByProperty(map);
 	
-	CCTexture2D* texture = CCTextureCache::sharedTextureCache()->
+	Texture2D* texture = Director::getInstance()->getTextureCache()->
 		addImage("bossBullet.png");
 	setTexture(texture);
 	setTextureRect(CCRectMake(0, 0, texture->getContentSize().width,
@@ -32,9 +32,9 @@ bool ItemFireString::init(ValueMap& map)
 	setRotation(begAngle);
 
 	int time = map.at("time").asInt();
-
-	runAction(CCRepeatForever::create(
-		CCRotateBy::create(time, 360)));
+	this->setScale(0.4f);
+	runAction(RepeatForever::create(
+		RotateBy::create(time, 360)));
 
 	return true;
 }
@@ -46,8 +46,8 @@ void ItemFireString::collisionCheck(float dt){
 
 	//ªÒ»°œﬂ∂Œ
 	struct Line{
-		CCPoint p1;
-		CCPoint p2;
+		Vec2 p1;
+		Vec2 p2;
 	};
 	Line fireString;
 

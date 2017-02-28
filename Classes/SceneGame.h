@@ -5,7 +5,7 @@
 class Item;
 class Mario;
 class ProgressBar;
-
+class ItemMushroom;
 
 class SceneGame:public Scene
 {
@@ -40,7 +40,12 @@ private:
 	void moveMarioCheck(float delta);
 	void marioEatCoinCheck(float delta);
 	void marioEatHideMushroomCheck();
+	void marioHitSomethingCheck(float dt);
+	void marioHitBlockHandle(Sprite* block, const Vec2& tileCoordiate,common::BlockType type);
+	void marioHitQuestionAnimationEndCallback(Node* block, ItemMushroom* mushroom);
+	void marioHitQuestionHandle(Sprite* block, const Vec2& tileCoordiate);
 
+	void destroyBlock(Sprite* block);
 public:
 	TMXTiledMap*    _map;
 	ProgressBar*    _bar;

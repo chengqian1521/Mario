@@ -5,6 +5,9 @@
 #define ALL_LEVEL_NUM 8
 #define ARG_GRAVITY   10
 
+#define     Mario_speed  100;
+
+#define GID_COIN 661
 
 /*images*/
 #define IMAGE_about_normal						"about_normal.png"

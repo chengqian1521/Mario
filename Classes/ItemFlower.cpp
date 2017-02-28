@@ -30,7 +30,7 @@ bool ItemFlower::init(ValueMap& map)
 //										  ccp(0,11)).y;
 	_speedY = 50;
 
-	setZOrder(0);
+	setLocalZOrder(0);
 	setPositionX(getPositionX() - 8);
 
 	this->runAction(CCRepeatForever::create(

@@ -27,6 +27,9 @@ bool ItemBoss::init(ValueMap& map)
 	m_status = NORMAL;
 	_speedX = 40;
 	_speedY = 0;
+
+	
+
 	updateStatus();
 	scheduleOnce(schedule_selector(ItemBoss::jumpCallback), 3.0f);
 	return true;
@@ -55,6 +58,10 @@ void ItemBoss::moveCheck(float dt){
 	}
 
 	
+}
+void ItemBoss::update(float dt){
+	collisionCheck(dt);
+	moveCheck(dt);
 }
 void ItemBoss::collisionCheck(float dt){
 

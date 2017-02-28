@@ -7,13 +7,14 @@ class ItemBoss :public ItemCanMove
 public:
 	enum State
 	{
-	NORMAL,
-	DROPPING
+		NORMAL,
+		DROPPING
 	} m_status;
 	static ItemBoss* create(ValueMap& map);
 	bool init(ValueMap& map);
 	virtual void moveCheck(float dt);
 	virtual void collisionCheck(float dt);
+	virtual void update(float dt);
 	void updateStatus();
 	void jumpCallback(float dt);
 

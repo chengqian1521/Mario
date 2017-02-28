@@ -18,9 +18,9 @@ public:
 
 	bool _alreadlyFly;
 
-	int m_duration;
-	int m_offsetH;
-	int m_offsetV;
+	int _duration;
+	int _offsetH;
+	int _offsetV;
 
 protected:
 	

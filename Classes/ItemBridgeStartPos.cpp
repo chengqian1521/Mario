@@ -22,7 +22,7 @@ bool ItemBridgeStartPos::init(ValueMap& map)
 	_type = Item::IT_BridgeStartPos;
 	setPositionByProperty(map);
 
-	setContentSize(CCSizeMake(16, 16));
+	setContentSize(Size(16, 16));
 
 	return true;
 }

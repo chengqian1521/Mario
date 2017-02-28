@@ -22,10 +22,9 @@ bool ItemLadderLR::init(ValueMap& map)
 	m_dist = 0;
 	setPositionX(getPositionX() - 30);
 	setPositionByProperty(map);
-	CCTexture2D* texture = CCTextureCache::sharedTextureCache()
-		->addImage("ladder.png");
+	Texture2D* texture =textureCache->addImage("ladder.png");
 	setTexture(texture);
-	setTextureRect(CCRectMake(0, 0, texture->getContentSize().width, texture->getContentSize().height));
+	setTextureRect(Rect(0, 0, texture->getContentSize().width, texture->getContentSize().height));
 
 	//一开始还是向右
 	m_lorR=map.at("LorR").asInt();
@@ -53,8 +52,8 @@ void ItemLadderLR::moveCheck(float dt){
 	}
 }
 void ItemLadderLR::collisionCheck(float dt){
-	CCRect rcMario = Mario::getInstance()->boundingBox();
-	CCRect rcLadder = boundingBox();
+	Rect rcMario = Mario::getInstance()->getBoundingBox();
+	Rect rcLadder = getBoundingBox();
 	if (rcMario.intersectsRect(rcLadder)){
 		m_bIsMarioOnThis = true;
 		if (Mario::getInstance()->isOnLadder()){

@@ -2,7 +2,7 @@
 #include "Item.h"
 #include "SceneGame.h"
 #include "ItemMushroom.h"
-#include <hash_set>
+#include <unordered_set>
 Mario* Mario::sm_mario = NULL;
 Mario* Mario::getInstance(){
 	if (sm_mario){
@@ -15,7 +15,7 @@ Mario* Mario::getInstance(){
 		}
 		else{
 			delete sm_mario;
-			sm_mario = nullptr;
+			sm_mario = nullptr; 
 		}
 
 		return sm_mario;
@@ -29,9 +29,8 @@ bool Mario::init(){
 	Sprite::initWithSpriteFrame(frame);
 
 	m_faceDir = common::RIGHT;
-	_speedX = 0;	
-	_speedY = 0;	
-	_speed_const = 100;
+	_speed = Vec2(0, 0);
+	
 	_isFly = false;
 	_life = 3;
 	_state = State::Small;
@@ -137,16 +136,17 @@ void Mario::updateStatus(){
 								  ->getSpriteFrameByName(m_faceDir == common::LEFT ?
 								  "smallJumpLeft" : "smallJumpRight"));
 		}
+
 		return;
 	}
 
-	if (_speedX < 0){
+	if (_speed.x < 0){
 
 		runAction(RepeatForever::create(
 			Animate::create(AnimationCache::getInstance()
 			->getAnimation(_state != State::Small ? "bigMoveLeftAnimation" : "smallMoveLeftAnimation"))));
 	}
-	else if (_speedX>0){
+	else if (_speed.x>0){
 
 		runAction(RepeatForever::create(
 			Animate::create(AnimationCache::getInstance()
@@ -168,8 +168,9 @@ void Mario::updateStatus(){
 }
 
 void Mario::stop(){
-	if (_speedX){
-		_speedX = 0;
+	
+	if (_speed.x){
+		_speed.x = 0;
 		updateStatus();
 	}
 }
@@ -189,7 +190,7 @@ bool Mario::canMoveDown(float dt){
 	Vec2 ptMarioWorld = map->convertToWorldSpace(ptMario);
 	Vec2 pts[3];
 
-	float minY = rcMario.getMinY() + _speedY*dt;
+	float minY = rcMario.getMinY() + _speed.y*dt;
 	if (rcMario.getMinY() >= map->getContentSize().height){
 		return true;
 	}
@@ -238,7 +239,7 @@ bool Mario::canMoveUp(float dt){
 
 	//向上
 	//判断是否出界
-	float maxY = rcMario.getMaxY() + _speedY*dt;
+	float maxY = rcMario.getMaxY() + _speed.y*dt;
 	if (maxY > map->getContentSize().height)
 		return true;
 
@@ -259,10 +260,7 @@ bool Mario::canMoveUp(float dt){
 			TMXLayer* layer = map->getLayer(layerName[j]);
 			int gid = layer->getTileGIDAt(ptTile);
 			if (gid){
-				//有东西挡住了
-
-				hitSomething(layer, gid, ptTile);
-
+				//有东西挡住了				
 				return false;
 			}
 		}
@@ -289,16 +287,16 @@ bool Mario::canMoveHorizontally(float dt){
 	if (getPositionY() < 0)
 		return true;
 	//判断是否出界
-	if (ptMarioWorld.x + _speedX*dt <= 0){
+	if (ptMarioWorld.x + _speed.x*dt <= 0){
 		return false;
 	}
 
 	float midY = rcMario.getMidY() > map->getContentSize().height - 1 ? map->getContentSize().height - 1 : rcMario.getMidY();
 	float maxY = rcMario.getMaxY() > map->getContentSize().height - 1 ? map->getContentSize().height - 1 : rcMario.getMaxY();
 	//CCLOG("midY=%g,maxY=%g", midY, maxY);
-	if (_speedX < 0){
+	if (_speed.x < 0){
 		//向左走
-		float minX = rcMario.getMinX() + _speedX*dt;
+		float minX = rcMario.getMinX() + _speed.x*dt;
 		pts[0] = Vec2(minX, midY);
 		pts[1] = Vec2(minX, maxY);
 		pts[2] = Vec2(minX, rcMario.getMinY());
@@ -306,7 +304,7 @@ bool Mario::canMoveHorizontally(float dt){
 	}
 	else{
 		//向右走
-		float maxX = rcMario.getMaxX() + _speedX*dt;
+		float maxX = rcMario.getMaxX() + _speed.x*dt;
 		pts[0] = Vec2(maxX, midY);
 		pts[1] = Vec2(maxX, maxY);
 		pts[2] = Vec2(maxX, rcMario.getMinY());
@@ -339,17 +337,15 @@ TMXTiledMap* Mario::getMap(){
 }
 
 
-void Mario::moveHorizontal(common::Direction dir){
-	if (_isDead || _isAutoRunning)
-		return;
-
-	if (!_speedX){
+void Mario::setHorizontalSpeed(common::Direction dir){
+	
+	if (m_faceDir!=dir||!_speed.x){
 
 		if (dir == common::LEFT){
-			_speedX = -_speed_const;
+			_speed.x = -Mario_speed;
 		}
 		else{
-			_speedX = _speed_const;
+			_speed.x = Mario_speed;
 		}
 
 		m_faceDir = dir;
@@ -359,20 +355,12 @@ void Mario::moveHorizontal(common::Direction dir){
 
 }
 
-void Mario::jump(){
+
+void Mario::jump(int initV){
 	if (_isDead || _isFly || _isAutoRunning)
 		return;
 
-	_speedY = 300;
-	_isFly = true;
-
-	updateStatus();
-
-}
-void Mario::jump(int initV){
-	if (_isDead)
-		return;
-	_speedY = initV;
+	_speed.y = initV;
 	_isFly = true;
 
 	updateStatus();
@@ -387,64 +375,61 @@ void Mario::moveVerticalCheck(float dt){
 
 	//判断是否可以自由落体
 	if (!_isFly){
-		_speedY -= ARG_GRAVITY;
+		_speed.y -= ARG_GRAVITY;
 		if (canMoveDown(dt)){
 			//没有东西挡住,自由下落
-			this->setPositionY(getPositionY() + dt*_speedY);
-			CCLOG("pos y=%f",getPositionY());
-			
+			this->setPositionY(getPositionY() + dt*_speed.y);
 			_isFly = true;
 
 		}
 		else{
 			_isFly = false;
-			_speedY = 0;
+			_speed.y = 0;
 		}
 
 	}
 
-	if (_speedY > 0){
+	if (_speed.y > 0){
 		if (canMoveUp(dt)){
-			setPositionY(getPositionY() + dt*_speedY);
-			_speedY -= ARG_GRAVITY;
+			setPositionY(getPositionY() + dt*_speed.y);
+			_speed.y -= ARG_GRAVITY;
 		}
 		else{
 			//速度反弹
-			_speedY = -_speedY;
+			_speed.y = -_speed.y;
 		}
 	}
-	else if (_speedY < 0){
+	else if (_speed.y < 0){
 		if (canMoveDown(dt)){
-			setPositionY(getPositionY() + dt*_speedY);
-			_speedY -= ARG_GRAVITY;
+			setPositionY(getPositionY() + dt*_speed.y);
+			_speed.y -= ARG_GRAVITY;
 		}
 		else{
 			_isFly = false;
-			_speedY = 0;
+			_speed.y = 0;
 			updateStatus();
 		}
 	}
 	else{
-		_speedY -= ARG_GRAVITY;
+		_speed.y -= ARG_GRAVITY;
 
 	}
 
 
 }
 
-
 void Mario::moveHorizontalCheck(float dt){
-	if (!_speedX)
+	if (!_speed.x)
 		return;
 	if (!canMoveHorizontally(dt))
 		return;
-	this->setPositionX(getPositionX() + _speedX*dt);
-	if (_speedX > 0){
+	this->setPositionX(getPositionX() + _speed.x*dt);
+	if (_speed.x > 0){
 		Node* node = getParent();
 		Vec2 ptWorld = node->convertToWorldSpace(getPosition());
 
 		if (!_isAutoRunning&&ptWorld.x > winSize.width / 2){
-			node->setPositionX(node->getPositionX() - dt*abs(_speedX));
+			node->setPositionX(node->getPositionX() - dt*abs(_speed.x));
 		}
 	}
 
@@ -468,7 +453,7 @@ void Mario::die(bool realDead){
 
 		this->stopAllActions();
 		
-		_speedX = 0;
+		_speed.x = 0;
 
 		//进入死亡动画
 		Animate* animate = Animate::create(AnimationCache::getInstance()
@@ -523,60 +508,15 @@ bool Mario::isDead(){
 	return _isDead;
 }
 
-void Mario::hitSomething(TMXLayer * layer, int gid, Vec2 ptTile){
-	
-	if (std::string(layer->getLayerName()) == "block"){
-		//顶到砖头了,看砖里有没有蘑菇
-		Sprite* sprite = layer->getTileAt(ptTile);
-		auto func = std::bind(&Mario::checkHitMushroomCallback,this,std::placeholders::_1);
-		CallFuncN *callfunc = CallFuncN::create(func);
-		JumpBy*  by = JumpBy::create(0.3f, Vec2(0, 0), 12, 1);
-		sprite->runAction(Sequence::create(by, callfunc, nullptr));
-		
-	}
-	else{
-		
 
-	}
 
-	
-	
-}
 
-void Mario::checkHitMushroomCallback(Node* node){
-
-	SceneGame* game = dynamic_cast<SceneGame*>(getMap()->getParent());
-	if (!game){
-		CCLOG_DYNAMIC_ERR;
-		return;
-	}
-
-	//那块砖
-	Rect rcNode = node->getBoundingBox();
-	rcNode.size = rcNode.size - Size(1, 1);
-
-	for (auto ib = game->_mushrooms.begin(); ib != game->_mushrooms.end(); ++ib){
-		Item* item = *ib;
-		Rect rcItem = item->getBoundingBox();
-		rcItem.size = rcItem.size - Size(1, 1);
-
-		//撞到蘑菇了
-		if (rcItem.intersectsRect(rcNode)){
-			item->setVisible(true);
-			ItemMushroom* mushroom = dynamic_cast<ItemMushroom*>(item);
-			if (!mushroom)
-				CCLOG_DYNAMIC_ERR;
-			mushroom->wakeup();
-			game->_mushrooms.erase(ib);
-			break;
-		}
-
-	}
-}
 
 void Mario::eatMushroom(Item::ItemType type){
 	if (type == Item::IT_MUSHROOMREWARD)
 		_state=State::Big;
+
+	updateStatus();
 }
 
 void Mario::beginGodMode(float dt){
@@ -597,7 +537,7 @@ bool Mario::isGodMode(){
 void Mario::autoRun(){
 	_isAutoRunning = true;
 	updateStatus();
-	_speedY = 0;
+	_speed.y = 0;
 
 
 
@@ -625,21 +565,21 @@ bool Mario::isOnLadder(){
 }
 
 int Mario::getSpeedY(){
-	return _speedY;
+	return _speed.y;
 }
 int Mario::getSpeedX(){
-	return _speedX;
+	return _speed.x;
 }
 
 void Mario::setSpeedY(int v_y){
-	_speedY = v_y;
+	_speed.y = v_y;
 }
 void Mario::setSpeedX(int v_x){
-	_speedX = v_x;
+	_speed.x = v_x;
 }
 
 void Mario::reverseSpeedY(){
-	_speedY = -_speedY;
+	_speed.y = -_speed.y;
 }
 
 void  Mario::setIsFly(bool isFly){

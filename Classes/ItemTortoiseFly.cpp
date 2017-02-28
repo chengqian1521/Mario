@@ -8,7 +8,7 @@ ItemTortoiseFly* ItemTortoiseFly::create(ValueMap& map)
 	}
 	else{
 		delete pRet;
-		pRet = NULL;
+		pRet = nullptr;
 	}
 	return pRet;
 
@@ -32,13 +32,8 @@ void ItemTortoiseFly::updateStatus(){
 	
 	if (m_status == NORMAL){
 		stopAllActions();
-
-
-		
-		CCAnimation* animation1 = CCAnimationCache::sharedAnimationCache()->
-			animationByName(_speedX > 0 ? "tortoiseFlyRight" : "tortoiseFlyLeft");
-
-		runAction(CCRepeatForever::create(CCAnimate::create(animation1)));
+		runAction(RepeatForever::create(Animate::create(AnimationCache::getInstance()->
+														getAnimation(_speedX > 0 ? "tortoiseFlyRight" : "tortoiseFlyLeft"))));
 
 	}
 
@@ -77,8 +72,8 @@ void ItemTortoiseFly::moveCheck(float dt){
 }
 void ItemTortoiseFly::collisionCheck(float dt){
 
-	CCRect rcItem = boundingBox();
-	CCRect rcMario = Mario::getInstance()->boundingBox();
+	Rect rcItem = getBoundingBox();
+	Rect rcMario = Mario::getInstance()->getBoundingBox();
 	if (rcItem.intersectsRect(rcMario)){
 		if (m_status == NORMAL){
 				if (Mario::getInstance()->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
