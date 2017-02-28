@@ -1,0 +1,1 @@
+If you want to build the peoject and run it,you need to download the cocos-2dx-3.10 from cocos2d-x.org,then create new project by cocos commod and l flag is cpp,and then you should replace Classes and Resources whit my offer 
