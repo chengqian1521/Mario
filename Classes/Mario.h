@@ -30,6 +30,7 @@ public:
 	void moveVerticalCheck(float dt);
 	void moveHorizontalCheck(float dt);
 
+
 	
 	//更新马里奥实际状态
 	void updateStatus();
@@ -82,7 +83,7 @@ private:
 protected:
 	//status
 	static Mario * sm_mario;
-	common::Direction  m_faceDir;	//静止时脸的朝向
+	common::Direction  _faceDir;	//静止时脸的朝向
 				
 	Vec2	_speed;					//速度向上为正	
 				
@@ -95,8 +96,6 @@ protected:
 	bool	_isDead;
 	bool	_isAutoRunning;
 	bool    _isOnLadder;
-
-
 };
 
 #endif

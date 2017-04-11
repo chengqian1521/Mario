@@ -27,9 +27,6 @@ public:
 protected:
 	
 	int m_initXV;
-	
-	
-						
 	bool m_bIsDead;
 	State m_state;
 

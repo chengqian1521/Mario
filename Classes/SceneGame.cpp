@@ -553,16 +553,16 @@ void SceneGame::marioHitQuestionHandle(Sprite* block, const Vec2& tileCoordiate)
 		Sprite* coin = layer->getTileAt(tileCoordiateCoin);
 		coin->runAction(Sequence::create(JumpBy::create(.5f,Vec2(0,0),30,1),CallFunc::create(std::bind(&Sprite::removeFromParent, coin)),nullptr));
 	}
-	else {
+	
 
-		auto func = std::bind(&SceneGame::marioHitQuestionAnimationEndCallback, this, std::placeholders::_1, mushroom);
-		CallFuncN *callfunc = CallFuncN::create(func);
-		JumpBy*  by = JumpBy::create(0.15f, Vec2(0, 0), 8, 1);
-		block->runAction(Sequence::create(by, callfunc, nullptr));
-	}
+	auto func = std::bind(&SceneGame::marioHitQuestionAnimationEndCallback, this, std::placeholders::_1, mushroom);
+	CallFuncN *callfunc = CallFuncN::create(func);
+	JumpBy*  by = JumpBy::create(0.15f, Vec2(0, 0), 8, 1);
+	block->runAction(Sequence::create(by, callfunc, nullptr));
+	
 }
 
-void SceneGame::marioHitQuestionAnimationEndCallback(Node* block, ItemMushroom* mushroom) {
+void SceneGame::marioHitQuestionAnimationEndCallback(Node* block,ItemMushroom* mushroom) {
 	
 	if (mushroom)
 		mushroom->wakeup();
@@ -591,10 +591,10 @@ void SceneGame::destroyBlock(Sprite* block) {
 	sps[1]->setPosition(block->getPosition() + Vec2(4,4));
 	sps[2]->setPosition(block->getPosition() + Vec2(-4, -4));
 	sps[3]->setPosition(block->getPosition() + Vec2(4, -4));
-	sps[0]->runAction(Sequence::create(JumpBy::create(0.5f, Vec2(-50, -20), 40, 1), CallFunc::create(std::bind(&Sprite::removeFromParent, sps[0])), nullptr));
-	sps[1]->runAction(Sequence::create(JumpBy::create(0.5f, Vec2(50, -20), 40, 1), CallFunc::create(std::bind(&Sprite::removeFromParent, sps[1])), nullptr));
-	sps[2]->runAction(Sequence::create(JumpBy::create(0.5f, Vec2(-50, -20), 20, 1), CallFunc::create(std::bind(&Sprite::removeFromParent, sps[2])), nullptr));
-	sps[3]->runAction(Sequence::create(JumpBy::create(0.5f, Vec2(50, -20), 20, 1), CallFunc::create(std::bind(&Sprite::removeFromParent, sps[3])), nullptr));
+	sps[0]->runAction(Sequence::create(JumpBy::create(0.5f, Vec2(-50, -60), 40, 1), CallFunc::create(std::bind(&Sprite::removeFromParent, sps[0])), nullptr));
+	sps[1]->runAction(Sequence::create(JumpBy::create(0.5f, Vec2(50, -60), 40, 1), CallFunc::create(std::bind(&Sprite::removeFromParent, sps[1])), nullptr));
+	sps[2]->runAction(Sequence::create(JumpBy::create(0.5f, Vec2(-50, -60), 20, 1), CallFunc::create(std::bind(&Sprite::removeFromParent, sps[2])), nullptr));
+	sps[3]->runAction(Sequence::create(JumpBy::create(0.5f, Vec2(50, -60), 20, 1), CallFunc::create(std::bind(&Sprite::removeFromParent, sps[3])), nullptr));
 
 	block->removeFromParent();
 

@@ -9,8 +9,9 @@ ItemTortoise* ItemTortoise::create(ValueMap& map)
 	}
 	else{
 		delete pRet;
-		pRet = NULL;
+		pRet = nullptr;
 	}
+
 	return pRet;
 
 }
@@ -69,8 +70,8 @@ void ItemTortoise::collisionCheck(float dt){
 		return;
 	if (_isGodMode)
 		return;
-	CCRect rcMario = Mario::getInstance()->boundingBox();
-	CCRect rcItem = this->boundingBox();
+	Rect rcMario = Mario::getInstance()->getBoundingBox();
+	Rect rcItem = this->boundingBox();
 
 	if (rcMario.intersectsRect(rcItem)){
 
@@ -110,16 +111,16 @@ void ItemTortoise::collisionCheck(float dt){
 		if (m_state == CRAZY){
 			if (Mario::getInstance()->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
 				this->stopAllActions();
-				this->runAction(CCRepeatForever::create(CCAnimate::create(CCAnimationCache::sharedAnimationCache()->animationByName("tortoiseDead"))));
+				this->runAction(RepeatForever::create(Animate::create(AnimationCache::getInstance()->getAnimation("tortoiseDead"))));
 
 				_speedX = 0;
 				m_state = SLEEP;
 				//无敌一段时间
 				_isGodMode = true;
-				scheduleOnce(schedule_selector(ItemTortoise::cancelGodModeCallback), 0.2f);
+				scheduleOnce(CC_SCHEDULE_SELECTOR(ItemTortoise::cancelGodModeCallback), 0.2f);
 
 				//过一段时间复活
-				scheduleOnce(schedule_selector(ItemTortoise::reLiveCallback), 0.2f);
+				scheduleOnce(CC_SCHEDULE_SELECTOR(ItemTortoise::reLiveCallback), 0.2f);
 
 			}
 			else{
@@ -146,9 +147,9 @@ void ItemTortoise::reLiveCallback(float dt){
 		m_state = NORMAL;
 		_speedX = m_initXV;
 		stopAllActions();
-		this->runAction(CCRepeatForever::create(CCAnimate::create(
-			CCAnimationCache::sharedAnimationCache()
-			->animationByName(_speedX > 0 ?
+		this->runAction(RepeatForever::create(Animate::create(
+			AnimationCache::getInstance()
+			->getAnimation(_speedX > 0 ?
 			"tortoiseRightMoving" : "tortoiseLeftMoving"))));
 
 	}
@@ -159,14 +160,10 @@ void ItemTortoise::updateStatus(){
 		stopAllActions();
 
 		
-	this->runAction(CCRepeatForever::create(CCAnimate::create(
-				CCAnimationCache::sharedAnimationCache()
-				->animationByName(_speedX > 0 ?
+	this->runAction(RepeatForever::create(Animate::create(
+				AnimationCache::getInstance()
+				->getAnimation(_speedX > 0 ?
 				"tortoiseRightMoving" : "tortoiseLeftMoving"))));
-
-		
-
-		
 	}
 
 }

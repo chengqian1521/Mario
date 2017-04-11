@@ -17,7 +17,6 @@ Mario* Mario::getInstance(){
 			delete sm_mario;
 			sm_mario = nullptr; 
 		}
-
 		return sm_mario;
 	}
 }
@@ -28,7 +27,7 @@ bool Mario::init(){
 	SpriteFrame* frame = SpriteFrame::createWithTexture(texture, Rect(0, 0, texture->getContentSize().width / 11, texture->getContentSize().height));
 	Sprite::initWithSpriteFrame(frame);
 
-	m_faceDir = common::RIGHT;
+	_faceDir = common::RIGHT;
 	_speed = Vec2(0, 0);
 	
 	_isFly = false;
@@ -128,12 +127,12 @@ void Mario::updateStatus(){
 	if (_isFly){
 		if (_state!=State::Small){
 			this->setSpriteFrame(SpriteFrameCache::getInstance()
-								  ->getSpriteFrameByName(m_faceDir == common::LEFT ?
+								  ->getSpriteFrameByName(_faceDir == common::LEFT ?
 								  "bigJumpLeft" : "bigJumpRight"));
 		}
 		else{
 			this->setSpriteFrame(SpriteFrameCache::getInstance()
-								  ->getSpriteFrameByName(m_faceDir == common::LEFT ?
+								  ->getSpriteFrameByName(_faceDir == common::LEFT ?
 								  "smallJumpLeft" : "smallJumpRight"));
 		}
 
@@ -154,7 +153,7 @@ void Mario::updateStatus(){
 	}
 	else{
 
-		if (m_faceDir == common::LEFT){
+		if (_faceDir == common::LEFT){
 
 			this->setDisplayFrameWithAnimationName(_state != State::Small ? "bigMoveLeftAnimation" : "smallMoveLeftAnimation", 0);
 		}
@@ -339,7 +338,7 @@ TMXTiledMap* Mario::getMap(){
 
 void Mario::setHorizontalSpeed(common::Direction dir){
 	
-	if (m_faceDir!=dir||!_speed.x){
+	if (_faceDir!=dir||!_speed.x){
 
 		if (dir == common::LEFT){
 			_speed.x = -Mario_speed;
@@ -348,7 +347,7 @@ void Mario::setHorizontalSpeed(common::Direction dir){
 			_speed.x = Mario_speed;
 		}
 
-		m_faceDir = dir;
+		_faceDir = dir;
 
 		updateStatus();
 	}
@@ -539,7 +538,7 @@ void Mario::autoRun(){
 	updateStatus();
 	_speed.y = 0;
 
-
+	
 
 	//自动向前走
 	scheduleOnce(CC_SCHEDULE_SELECTOR(Mario::beginAutoMoveRightCallback), 1.5f);
