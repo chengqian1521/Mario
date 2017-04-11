@@ -525,6 +525,7 @@ void Mario::beginGodMode(float dt){
 	scheduleOnce(schedule_selector(Mario::cancelGodModeCallback), dt);
 }
 void Mario::cancelGodModeCallback(float dt){
+
 	_isGodMode = false;
 }
 
