@@ -521,7 +521,6 @@ void Mario::eatMushroom(Item::ItemType type){
 void Mario::beginGodMode(float dt){
 	if (_isGodMode)
 		return;
-
 	_isGodMode = true;
 	scheduleOnce(schedule_selector(Mario::cancelGodModeCallback), dt);
 }
