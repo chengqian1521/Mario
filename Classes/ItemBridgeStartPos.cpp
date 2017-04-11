@@ -1,9 +1,10 @@
 #include "ItemBridgeStartPos.h"
 #include "Mario.h"
 #include "ItemBoss.h"
-ItemBridgeStartPos* ItemBridgeStartPos::create(CCDictionary* dict){
+ItemBridgeStartPos* ItemBridgeStartPos::create(ValueMap& map)
+{
 	ItemBridgeStartPos * pRet = new ItemBridgeStartPos();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -15,12 +16,13 @@ ItemBridgeStartPos* ItemBridgeStartPos::create(CCDictionary* dict){
 }
 
 
-bool ItemBridgeStartPos::init(CCDictionary* dict){
+bool ItemBridgeStartPos::init(ValueMap& map)
+{
 	Item::init();
-	m_type = Item::IT_BridgeStartPos;
-	setPositionByProperty(dict);
+	_type = Item::IT_BridgeStartPos;
+	setPositionByProperty(map);
 
-	setContentSize(CCSizeMake(16, 16));
+	setContentSize(Size(16, 16));
 
 	return true;
 }
@@ -31,7 +33,7 @@ void ItemBridgeStartPos::collisionCheck(float dt){
 	//	//ฒ๐วล
 	//	ItemBoss* boss = (ItemBoss*)sm_boss;
 	//	boss->m_status = ItemBoss::DROPPING;
-	//	CCPoint ptTile = Common::pointToMap(getMap(), getPosition());
+	//	CCPoint ptTile = myutil::bLGLPointToTile(getMap(), getPosition());
 	//	CCTMXLayer* layer = getMap()->layerNamed("land");
 	//	for (int i = 0; i < 13; ++i){
 	//		layer->setTileGID(0, ptTile);

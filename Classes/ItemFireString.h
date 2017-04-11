@@ -6,8 +6,8 @@ class ItemFireString :public Item
 {
 public:
 
-	static ItemFireString* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
+	static ItemFireString* create(ValueMap& map);
+	bool init(ValueMap& map);
 	virtual void collisionCheck(float dt);
 
 };

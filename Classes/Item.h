@@ -4,14 +4,16 @@
 #include <set>
 #include <string>
 class ItemFlagpoint;
-class ItemMushroomReward;
+class ItemMushroom;
 class Mario;
-class Item:public CCSprite
+class ItemTortoiseRound;
+
+class Item:public Sprite
 {
 public:
 	enum ItemType
 	{
-		IT_MUSHROOM,
+		IT_MushroomMonster,
 		IT_TORTOISE,
 		IT_FLOWER,
 		IT_MUSHROOMREWARD,
@@ -27,51 +29,28 @@ public:
 		IT_bullet,
 		IT_BridgeStartPos
 	};
-	Item();
-	virtual ~Item();
-	static Item* create(CCDictionary*);
+	
+	static Item* create(ValueMap &map);
 	bool init();
+	void onEnter()override;
+	void onExit()override;
 
-	virtual void move(float dt);
-	virtual void collisionCheck(float dt);
-	virtual void wakeup();
+	
+	virtual void collisionCheck(float dt){};
+	
 	void update(float dt);
 
-	void setPositionByProperty(CCDictionary*);
-
+	void setPositionByProperty(const ValueMap&);
 	bool isAppearInWindow();
 	bool isOutOfWindow();
-
-	CCTMXTiledMap* getMap();
-
+	TMXTiledMap* getMap();
 	virtual void autoDropFlag();
-
-	bool canMoveHorizontal(float dt);
-	bool canMoveDown(float dt);
-
-	void moveHorizontal(float);
-	void moveDown(float dt);
-
-	void beginGodMode(float dt);
-	void cancelGodModeCallback(float dt);
 	
-	void runAnimation(const char* name){
-		CCAnimation* animation = CCAnimationCache::sharedAnimationCache()->
-			animationByName(name);
-		runAction(CCRepeatForever::create(CCAnimate::create(animation)));
-	}
-public:
-	int m_speedX;
-	int m_speedY;
-	bool m_bIsGodMode;
-	static int		sm_g;   //重力加速度
-	ItemType m_type;
-	static Mario*   sm_mario;
-	static Item*    sm_flag;
-	static std::string str;
-	static std::set<Item*>*  sm_items;
-	static Item*  finalPoint;
-	static Item*  sm_boss;
+	void runAnimation(const char* name);
+
+
+	CC_SYNTHESIZE(ItemType, _type, Type);
+	
 };
 
 #endif

@@ -1,8 +1,9 @@
 #include "ItemFinalpoint.h"
 
-ItemFinalpoint* ItemFinalpoint::create(CCDictionary* dict){
+ItemFinalpoint* ItemFinalpoint::create(ValueMap& map)
+{
 	ItemFinalpoint * pRet = new ItemFinalpoint();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -14,10 +15,11 @@ ItemFinalpoint* ItemFinalpoint::create(CCDictionary* dict){
 }
 
 
-bool ItemFinalpoint::init(CCDictionary* dict){
+bool ItemFinalpoint::init(ValueMap& map)
+{
 	Item::init();
-	m_type = Item::IT_FINALPOINT;
-	setPositionByProperty(dict);
+	_type = Item::IT_FINALPOINT;
+	setPositionByProperty(map);
 	//setDisplayFrameWithAnimationName("mushroomMoving", 0);
 	return true;
 }

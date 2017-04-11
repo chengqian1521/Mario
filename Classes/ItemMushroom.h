@@ -1,22 +1,28 @@
-#ifndef __ITEMMUSHROOM_H__
-#define __ITEMMUSHROOM_H__
+#ifndef __ItemMushroom_H__
+#define __ItemMushroom_H__
 #include "Common.h"
-#include "Item.h"
-class ItemMushroom:public Item
+#include "ItemCanMove.h"
+class ItemMushroom :public ItemCanMove
 {
 public:
-	
-	static ItemMushroom* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
-	virtual void move(float dt);
-	virtual void collisionCheck(float dt);
-	
-	bool canMoveHorizontally(float dt);
-	bool canFreeFall(float dt);
+	enum State
+	{
+		SLEEP,
+		GROW,
+		MOVE
+	};
+	static ItemMushroom* create(ValueMap& map);
+	bool init(ValueMap& map);
+	virtual void wakeup();
+	void update(float dt)override;
 
-protected:
 	
+	void updateStatus();
+	void afterGrowCallback();
+
+	void collisionCheck(float dt);
+public:
+	State _state;
 	
-	bool m_bIsDead;
 };
 #endif

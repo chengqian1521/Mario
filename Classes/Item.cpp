@@ -1,9 +1,11 @@
+
 #include "Item.h"
+#include "ItemMushroomMonster.h"
 #include "ItemMushroom.h"
 #include "ItemTortoise.h"
 #include "ItemFlower.h"
-#include "ItemMushroomReward.h"
-#include "ItemMushroomAddLife.h"
+#include "ItemMushroom.h"
+#include "ItemMushroom.h"
 #include "ItemFlagpoint.h"
 #include "ItemFinalpoint.h"
 #include "ItemLadderLR.h"
@@ -15,262 +17,124 @@
 #include "ItemBoss.h"
 #include "ItemBridgeStartPos.h"
 #include "Mario.h"
-std::set<Item*>*  Item::sm_items = new std::set<Item*>();
-std::string Item::str("heh");
-Mario* Item::sm_mario = NULL;
-Item*  Item::sm_flag=NULL;
-Item*  Item::finalPoint = NULL;
-Item*  Item::sm_boss=NULL;
-int Item::sm_g = 10;
-Item::Item(){
-	
-}
-Item::~Item(){
-}
-Item* Item::create(CCDictionary* dict){
-	
-	std::set<int>  hah;
-	std::string str("hehe");
 
-	const CCString* type = dict->valueForKey("type");
-	if (type->m_sString == "mushroom"){
-		return ItemMushroom::create(dict);
+
+Item* Item::create( ValueMap&map)
+{
+	
+	const Value& type = map.at("type");
+	if (type.asString() == "mushroom"){
+		return ItemMushroomMonster::create(map);
 	}
-	else  if (type->m_sString == "tortoise"){
-		return ItemTortoise::create(dict);
+	else  if (type.asString() == "tortoise"){
+		return ItemTortoise::create(map);
 	}
-	else if (type->m_sString == "flower"){
-		return ItemFlower::create(dict);
+	else if (type.asString() == "flower"){
+		return ItemFlower::create(map);
 	}
-	else if (type->m_sString == "MushroomReward"){
-		ItemMushroomReward* mushroomReward = ItemMushroomReward::create(dict);
-		sm_items->insert(mushroomReward);
-			
+	else if (type.asString() == "MushroomReward"){
+		ItemMushroom* mushroomReward = ItemMushroom::create(map);
 		return mushroomReward;
 	}
-	else if (type->m_sString == "MushroomAddLife"){
-		ItemMushroomAddLife* itemMushroomAddLife = ItemMushroomAddLife::create(dict);
-		sm_items->insert(itemMushroomAddLife);
+	else if (type.asString() == "MushroomAddLife"){
+		ItemMushroom* itemMushroomAddLife = ItemMushroom::create(map);
+
 
 		return itemMushroomAddLife;
 	}
-	else if (type->m_sString == "flagpoint"){
-		return	Item::sm_flag=ItemFlagpoint::create(dict);
+	else if (type.asString() == "flagpoint"){
+		return	ItemFlagpoint::create(map);
 	}
-	else if (type->m_sString == "finalpoint"){
-		finalPoint = ItemFinalpoint::create(dict);
+	else if (type.asString() == "finalpoint"){
+		return ItemFinalpoint::create(map);
 	}
-	else if (type->m_sString == "ladderLR"){
-		return ItemLadderLR::create(dict);
+	else if (type.asString() == "ladderLR"){
+		return ItemLadderLR::create(map);
 	}
-	else if (type->m_sString == "flyfish"){
-		return ItemFlyFish::create(dict);
+	else if (type.asString() == "flyfish"){
+		return ItemFlyFish::create(map);
 	}
-	else if (type->m_sString == "tortoise_round"){
-		return ItemTortoiseRound::create(dict);
+	else if (type.asString() == "tortoise_round"){
+		return ItemTortoiseRound::create(map);
 	}
-	else if (type->m_sString == "tortoise_fly"){
-		return ItemTortoiseFly::create(dict);
+	else if (type.asString() == "tortoise_fly"){
+		return ItemTortoiseFly::create(map);
 	}
-	else if (type->m_sString == "ladderUD"){
-		return ItemLadderUD::create(dict);
+	else if (type.asString() == "ladderUD"){
+		return ItemLadderUD::create(map);
 	}
-	else if (type->m_sString == "fire_string"){
-		return ItemFireString::create(dict);
+	else if (type.asString() == "fire_string"){
+		return ItemFireString::create(map);
 	}
-	else if (type->m_sString == "boss"){
-		return ItemBoss::create(dict);
+	else if (type.asString() == "boss"){
+		return ItemBoss::create(map);
 	}
-	else if (type->m_sString == "bridgestartpos"){
-		return ItemBridgeStartPos::create(dict);
+	else if (type.asString() == "bridgestartpos"){
+		return ItemBridgeStartPos::create(map);
 	}
 
 
 	return NULL;
 }
 
-void Item::setPositionByProperty(CCDictionary* dict){
+void Item::setPositionByProperty(const ValueMap& dict){
 
-	const CCString* x = dict->valueForKey("x");
-	const CCString* y = dict->valueForKey("y");
-	setPosition(ccp(x->intValue(), y->intValue()-16));
-	ignoreAnchorPointForPosition(true);
+	const Value& x = dict.at("x");
+	const Value& y = dict.at("y");
+	setPosition(Vec2(x.asInt(), y.asInt()-16));
+	this->ignoreAnchorPointForPosition(true);
 }
-bool Item::init(){
-	CCSprite::init();
+bool Item::init()
+{
+	Sprite::init();
+	setLocalZOrder(common::ZO_MUSHROOM);
 	
-	sm_mario = Mario::getInstance();
-	m_bIsGodMode = false;
-	setZOrder(Common::ZO_MUSHROOM);
-	scheduleUpdate();
 	return true;
 }
-void Item::move(float dt){
-
+void Item::onEnter(){
+	Sprite::onEnter();
+	scheduleUpdate();
+	
+}
+void Item::onExit(){
+	
+	unscheduleUpdate();
+	Sprite::onExit();
 }
 
+
 void Item::update(float dt){
-	move(dt);
 	collisionCheck(dt);
 }
 
 bool Item::isAppearInWindow(){
-	CCPoint ptInMap = getPosition();
-	CCTMXTiledMap* map = getMap();
-	CCPoint ptInWorld = map->convertToWorldSpace(ptInMap);
+	Vec2 ptInMap = getPosition();
+	TMXTiledMap* map = getMap();
+	Vec2 ptInWorld = map->convertToWorldSpace(ptInMap);
 	return ( ptInWorld.x < winSize.width);
 	
-	
 }
 
-CCTMXTiledMap* Item::getMap(){
-	return (CCTMXTiledMap*)getParent();
+TMXTiledMap* Item::getMap(){
+	return (TMXTiledMap*)getParent();
 }
 bool Item::isOutOfWindow(){
-	CCPoint	ptWorld=getMap()->convertToWorldSpace(getPosition());
-	return (ptWorld.x < -winSize.width) || (getPositionY() <= -boundingBox().size.height);
-		
-	
+	Vec2	ptWorld=getMap()->convertToWorldSpace(getPosition());
+	return (ptWorld.x < -winSize.width) || (getPositionY() <= -getBoundingBox().size.height);
 }
 
- void Item::wakeup(){
 
-}
 
-void Item::collisionCheck(float dt){
-	
-}
- void Item::autoDropFlag(){
+void Item::autoDropFlag(){
 
 }
 
- bool Item::canMoveHorizontal(float dt){
  
-	
-	 CCRect rc(boundingBox().origin.x, boundingBox().origin.y,
-					boundingBox().size.width - 1, boundingBox().size.height - 1);
-	
-	 
-	 CCTMXTiledMap* map = getMap();
-	 CCPoint ptInWorld = map->convertToWorldSpace(getPosition());
-	 CCPoint pts[3];
-
-	 //判断水平是否出界
-	 if (ptInWorld.x + m_speedX*dt <= 0){
-		 return false;
-	 }
-
-	 //竖直方向如果出界 ,则可以移动
-	 if (getPositionY() < 0||getPositionY() >= map->getContentSize().height){
-		 return true;
-	 }
-	
-	 
-
-	 float midY = rc.getMidY() > map->getContentSize().height - 1 ? map->getContentSize().height - 1 : rc.getMidY();
-	 float maxY = rc.getMaxY() > map->getContentSize().height - 1 ? map->getContentSize().height - 1 : rc.getMaxY();
-	 
-	 if (m_speedX < 0){
-		 //向左走
-		 float minX = rc.getMinX() + m_speedX*dt;
-		 pts[0] = ccp(minX, midY);
-		 pts[1] = ccp(minX, maxY);
-		 pts[2] = ccp(minX, rc.getMinY());
-
-	 }
-	 else{
-		 //向右走
-		 float maxX = rc.getMaxX() + m_speedX*dt;
-		 pts[0] = ccp(maxX, midY);
-		 pts[1] = ccp(maxX, maxY);
-		 pts[2] = ccp(maxX, rc.getMinY());
-	 }
-
-	 for (int i = 0; i < 3; ++i){
-		 CCPoint ptTile = Common::pointToMap(map, pts[i]);
-
-		 //墙,水管,地板
-		 static const char *layerName[] = {
-			 "block",
-			 "pipe",
-			 "land"
-		 };
-		 for (int j = 0; j < sizeof(layerName) / sizeof(*layerName); ++j){
-			 CCTMXLayer* layer = map->layerNamed(layerName[j]);
-			 int gid = layer->tileGIDAt(ptTile);
-			 if (gid){
-				 //有东西挡住了
-				 return false;
-			 }
-		 }
-	 }
 
 
-	 return true;
- }
- bool Item::canMoveDown(float dt){
-	 if (m_speedY > 0)
-		 return true;
-	 CCRect rcItem(boundingBox().origin.x, boundingBox().origin.y,
-					boundingBox().size.width - 1, boundingBox().size.height - 1);
-	 CCPoint ptItem = getPosition();
-
-	 CCTMXTiledMap* map = getMap();
-	 CCPoint ptItemInWorld = map->convertToWorldSpace(ptItem);
-	 CCPoint pts[3];
-
-	 if (!m_speedY)
-		 m_speedY -= sm_g;
-
-	 float minY = rcItem.getMinY() + m_speedY*dt;
-	 if (rcItem.getMinY() >= map->getContentSize().height){
-		 return true;
-	 }
-	 //判断是否出界
-	 if (minY < 0){
-		 return true;
-	 }
-	 //向下
-	 pts[0] = ccp(rcItem.getMinX(), minY);
-	 pts[1] = ccp(rcItem.getMidX(), minY);
-	 pts[2] = ccp(rcItem.getMaxX(), minY);
-
-	 for (int i = 0; i < 3; ++i){
-		 CCPoint ptTile = Common::pointToMap(map, pts[i]);
-
-		 //墙,水管,地板
-		 static const char *layerName[] = {
-			 "block",
-			 "pipe",
-			 "land",
-
-		 };
-		 for (int j = 0; j < sizeof(layerName) / sizeof(*layerName); ++j){
-			 CCTMXLayer* layer = map->layerNamed(layerName[j]);
-			 int gid = layer->tileGIDAt(ptTile);
-			 if (gid){
-				 //有东西挡住了
-				 return false;
-			 }
-		 }
-	 }
-
-
-	 return true;
- }
-	 
- void Item::moveHorizontal(float dt){
-	 setPositionX(getPositionX() + dt*m_speedX);
- }
- void Item::moveDown(float dt){
-	 
-	 setPositionY(getPositionY() + dt*m_speedY);
- }
-
- void Item::beginGodMode(float dt){
-	 m_bIsGodMode = true;
-	 scheduleOnce(schedule_selector(Item::cancelGodModeCallback),dt);
- }
- void Item::cancelGodModeCallback(float dt){
-	 m_bIsGodMode = false;
+ 
+ void Item::runAnimation(const char* name){
+	 Animation* animation = AnimationCache::getInstance()->
+		 getAnimation(name);
+	 runAction(RepeatForever::create(Animate::create(animation)));
  }

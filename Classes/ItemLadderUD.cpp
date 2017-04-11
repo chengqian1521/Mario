@@ -1,8 +1,9 @@
 #include "ItemLadderUD.h"
 
-ItemLadderUD* ItemLadderUD::create(CCDictionary* dict){
+ItemLadderUD* ItemLadderUD::create(ValueMap& map)
+{
 	ItemLadderUD * pRet = new ItemLadderUD();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -14,10 +15,11 @@ ItemLadderUD* ItemLadderUD::create(CCDictionary* dict){
 }
 
 
-bool ItemLadderUD::init(CCDictionary* dict){
+bool ItemLadderUD::init(ValueMap& map)
+{
 	Item::init();
-	m_type = Item::IT_MUSHROOM;
-	setPositionByProperty(dict);
+	_type = Item::IT_MushroomMonster;
+	setPositionByProperty(map);
 	setDisplayFrameWithAnimationName("mushroomMoving", 0);
 	return true;
 }

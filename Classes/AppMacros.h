@@ -1,56 +1,147 @@
 #ifndef __APPMACROS_H__
 #define __APPMACROS_H__
 
-#include "cocos2d.h"
 
-/* For demonstrating using one design resolution to match different resources,
-   or one resource to match different design resolutions.
+#define ALL_LEVEL_NUM 8
+#define ARG_GRAVITY   10
 
-   [Situation 1] Using one design resolution to match different resources.
-     Please look into Appdelegate::applicationDidFinishLaunching.
-     We check current device frame size to decide which resource need to be selected.
-     So if you want to test this situation which said in title '[Situation 1]',
-     you should change ios simulator to different device(e.g. iphone, iphone-retina3.5, iphone-retina4.0, ipad, ipad-retina),
-     or change the window size in "proj.XXX/main.cpp" by "CCEGLView::setFrameSize" if you are using win32 or linux plaform
-     and modify "proj.mac/AppController.mm" by changing the window rectangle.
+#define     Mario_speed  100;
 
-   [Situation 2] Using one resource to match different design resolutions.
-     The coordinates in your codes is based on your current design resolution rather than resource size.
-     Therefore, your design resolution could be very large and your resource size could be small.
-     To test this, just define the marco 'TARGET_DESIGN_RESOLUTION_SIZE' to 'DESIGN_RESOLUTION_2048X1536'
-     and open iphone simulator or create a window of 480x320 size.
+#define GID_COIN 661
 
-   [Note] Normally, developer just need to define one design resolution(e.g. 960x640) with one or more resources.
- */
+/*images*/
+#define IMAGE_about_normal						"about_normal.png"
+#define IMAGE_about_select						"about_select.png"
+#define IMAGE_AB_normal						"AB_normal.png"					
+#define IMAGE_AB_select						"AB_select.png"					
+#define IMAGE_allow_walkLeft					"allow_walkLeft.png"			
+#define IMAGE_allow_walkRight					"allow_walkRight.png"		
+#define IMAGE_arrow 							"arrow.png"							
+#define IMAGE_arrowActionL						 "arrowActionL.png"				
+#define IMAGE_arrowActionR 					"arrowActionR.png"				
+#define IMAGE_arrowBroken 					"arrowBroken.png"				
+#define IMAGE_arrowBullet 					"arrowBullet.png"				
+#define IMAGE_arrow_die 					"arrow_die.png"					
+#define IMAGE_axe					     "axe.png"								
+#define IMAGE_backA 					"backA.png"							
+#define IMAGE_backB 					"backB.png"							
+#define IMAGE_background 					"background.png"					
+#define IMAGE_backKeyImage 					"backKeyImage.png"				
+#define IMAGE_backKeyLeft					 "backKeyLeft.png"				
+#define IMAGE_backKeyRight					 "backKeyRight.png"				
+#define IMAGE_backToMenu					 "backToMenu.png"					
+#define IMAGE_battery 					"battery.png"						
+#define IMAGE_batteryBoom1					 "batteryBoom1.png"				
+#define IMAGE_batteryBoom2 					"batteryBoom2.png"				
+#define IMAGE_batteryBoom3 					"batteryBoom3.png"				
+#define IMAGE_batteryBullet 					"batteryBullet.png"			
+#define IMAGE_bg 					"bg.png"								  
+#define IMAGE_blinkcoin					 "blinkcoin.png"					
+#define IMAGE_boss 					"boss.png"								
+#define IMAGE_bossBullet					 "bossBullet.png"					
+#define IMAGE_brokencoin					 "brokencoin.png"					
+#define IMAGE_bulletBorder					 "bulletBorder.png"				
+#define IMAGE_CloseNormal 					"CloseNormal.png"				
+#define IMAGE_CloseSelected 					"CloseSelected.png"			
+#define IMAGE_cloud					 "cloud.png"							
+#define IMAGE_coinani 					"coinani.png"						
+#define IMAGE_controlUI				"controlUI.png"					
+#define IMAGE_darkCloud				"darkCloud.png"					
+#define IMAGE_fireActionL				"fireActionL.png"				
+#define IMAGE_fireActionR				 "fireActionR.png"				
+#define IMAGE_fireBall					"fireBall.png"						
+#define IMAGE_fireLeft					"fireLeft.png"						
+#define IMAGE_fireRight				 "fireRight.png"					
+#define IMAGE_fire_die				"fire_die.png"						
+#define IMAGE_flag						"flag.png"								
+#define IMAGE_flower0				"flower0.png"						
+#define IMAGE_flyFishLeft			"flyFishLeft.png"				
+#define IMAGE_flyFishRight			"flyFishRight.png"				
+#define IMAGE_fps_images_hd		"fps_images-hd.png"			
+#define IMAGE_fps_images_ipadhd		 "fps_images-ipadhd.png"	
+#define IMAGE_fps_images					"fps_images.png"					
+#define IMAGE_gameover						"gameover.png"						
+#define IMAGE_HelloWorld				"HelloWorld.png"					
+#define IMAGE_ladder					"ladder.png"							
+#define IMAGE_left						"left.png"								
+#define IMAGE_leftright			 "leftright.png"					
+#define IMAGE_lighting				"lighting.png"						
+#define IMAGE_Mushroom0			 "Mushroom0.png"					
+#define IMAGE_music_off			 "music_off.png"					
+#define IMAGE_music_on				"music_on.png"						
+#define IMAGE_M_n					 "M_n.png"								
+#define IMAGE_M_s					 "M_s.png"								
+#define IMAGE_newgameA				"newgameA.png"						
+#define IMAGE_newgameB				"newgameB.png"						
+#define IMAGE_nextlevel_normal		 "nextlevel_normal.png"		
+#define IMAGE_nextlevel_select		 "nextlevel_select.png"		
+#define IMAGE_normal_die			"normal_die.png"					
+#define IMAGE_PassFailure				 "PassFailure.png"				
+#define IMAGE_PassSuccess				"PassSuccess.png"				
+#define IMAGE_princess				"princess.png"						
+#define IMAGE_quitgame_normal			"quitgame_normal.png"		
+#define IMAGE_quitgame_select			"quitgame_select.png"		
+#define IMAGE_restart_n				"restart_n.png"					
+#define IMAGE_restart_s			 "restart_s.png"					
+#define IMAGE_resume_n				"resume_n.png"						
+#define IMAGE_resume_s				"resume_s.png"						
+#define IMAGE_retry_normal			"retry_normal.png"				
+#define IMAGE_retry_select			"retry_select.png"				
+#define IMAGE_rewardMushroomSet	"rewardMushroomSet.png"	
+#define IMAGE_right					"right.png"							
+#define IMAGE_select_n				 "select_n.png"						
+#define IMAGE_select_s				"select_s.png"						
+#define IMAGE_Setting_n				"Setting_n.png"					
+#define IMAGE_setting_s				"setting_s.png"					
+#define IMAGE_Set_Menu				"Set_Menu.png"						
+#define IMAGE_Set_Music			 "Set_Music.png"					
+#define IMAGE_set_n				"set_n.png"							
+#define IMAGE_set_s				"set_s.png"							
+#define IMAGE_shanshuodecoin		"shanshuodecoin.png"			
+#define IMAGE_singleblock			"singleblock.png"				
+#define IMAGE_sliderProgress		"sliderProgress.png"			
+#define IMAGE_sliderTrack			"sliderTrack.png"				
+#define IMAGE_smallWalkLeft		"smallWalkLeft.png"			
+#define IMAGE_smallWalkRight		"smallWalkRight.png"			
+#define IMAGE_small_die			"small_die.png"					
+#define IMAGE_sound_effect_off		"sound_effect_off.png"		
+#define IMAGE_sound_effect_on		"sound_effect_on.png"		
+#define IMAGE_startgame_normal		"startgame_normal.png"		
+#define IMAGE_startgame_select		"startgame_select.png"		
+#define IMAGE_superMarioMap		"superMarioMap.png"			
+#define IMAGE_switchBg				"switchBg.png"						
+#define IMAGE_Tools				"Tools.png"							
+#define IMAGE_tortoise0			"tortoise0.png"					
+#define IMAGE_walkLeft				"walkLeft.png"						
+#define IMAGE_WalkLeft_fire		"WalkLeft_fire.png"			
+#define IMAGE_walkRight			"walkRight.png"					
+#define IMAGE_WalkRight_fire		"WalkRight_fire.png"			
 
-#define DESIGN_RESOLUTION_480X320    0
-#define DESIGN_RESOLUTION_1024X768   1
-#define DESIGN_RESOLUTION_2048X1536  2
+/*sounds*/
+#define SOUND_achievement  				  "sound/achievement.wav"
+#define SOUND_big_spaceship_flying  	  "sound/big_spaceship_flying.wav"		
+#define SOUND_bullet  					  "sound/bullet.wav"
+#define SOUND_button  					  "sound/button.wav"
+#define SOUND_enemy1_down  				  "sound/enemy1_down.wav"
+#define SOUND_enemy2_down  				  "sound/enemy2_down.wav"
+#define SOUND_enemy3_down  				  "sound/enemy3_down.wav"
+#define SOUND_game_music  				  "sound/game_music.wav"
+#define SOUND_game_over  				  "sound/game_over.wav"
+#define SOUND_get_bomb  				  "sound/get_bomb.wav"
+#define SOUND_get_double_laser  		  "sound/get_double_laser.wav"	
+#define SOUND_out_porp  				  "sound/out_porp.wav"
+#define SOUND_use_bomb  				  "sound/use_bomb.wav"
 
-/* If you want to switch design resolution, change next line */
-#define TARGET_DESIGN_RESOLUTION_SIZE  DESIGN_RESOLUTION_480X320
 
-typedef struct tagResource
-{
-    cocos2d::CCSize size;
-    char directory[100];
-}Resource;
 
-static Resource smallResource  =  { cocos2d::CCSizeMake(480, 320),   "iphone" };
-static Resource mediumResource =  { cocos2d::CCSizeMake(1024, 768),  "ipad"   };
-static Resource largeResource  =  { cocos2d::CCSizeMake(2048, 1536), "ipadhd" };
 
-#if (TARGET_DESIGN_RESOLUTION_SIZE == DESIGN_RESOLUTION_480X320)
-static cocos2d::CCSize designResolutionSize = cocos2d::CCSizeMake(480, 320);
-#elif (TARGET_DESIGN_RESOLUTION_SIZE == DESIGN_RESOLUTION_1024X768)
-static cocos2d::CCSize designResolutionSize = cocos2d::CCSizeMake(1024, 768);
-#elif (TARGET_DESIGN_RESOLUTION_SIZE == DESIGN_RESOLUTION_2048X1536)
-static cocos2d::CCSize designResolutionSize = cocos2d::CCSizeMake(2048, 1536);
-#else
-#error unknown target design resolution!
-#endif
 
-// The font size 24 is designed for small resolution, so we should change it to fit for current design resolution
-#define TITLE_FONT_SIZE  (cocos2d::CCEGLView::sharedOpenGLView()->getDesignResolutionSize().width / smallResource.size.width * 24)
+
+
+
+
+
+
+
 
 #endif /* __APPMACROS_H__ */

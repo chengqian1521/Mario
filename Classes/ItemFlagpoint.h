@@ -6,8 +6,8 @@ class ItemFlagpoint :public Item
 {
 public:
 
-	static ItemFlagpoint* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
+	static ItemFlagpoint* create(ValueMap& map);
+	bool init(ValueMap& map);
 	virtual void autoDropFlag();
 
 };

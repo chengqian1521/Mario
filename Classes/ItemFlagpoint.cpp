@@ -1,8 +1,9 @@
 #include "ItemFlagpoint.h"
 
-ItemFlagpoint* ItemFlagpoint::create(CCDictionary* dict){
+ItemFlagpoint* ItemFlagpoint::create(ValueMap& map)
+{
 	ItemFlagpoint * pRet = new ItemFlagpoint();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -14,19 +15,20 @@ ItemFlagpoint* ItemFlagpoint::create(CCDictionary* dict){
 }
 
 
-bool ItemFlagpoint::init(CCDictionary* dict){
+bool ItemFlagpoint::init(ValueMap& map)
+{
 	Item::init();
-	m_type = Item::IT_FLAGPOINT;
-	setPositionByProperty(dict);
+	_type = Item::IT_FLAGPOINT;
+	setPositionByProperty(map);
 
-	CCTexture2D* texture = CCTextureCache::sharedTextureCache()->addImage("flag.png");
+	Texture2D* texture = textureCache->addImage("flag.png");
 	setTexture(texture);
-	setTextureRect(CCRectMake(0, 0, texture->getContentSize().width, texture->getContentSize().height));
+	setTextureRect(Rect(0, 0, texture->getContentSize().width, texture->getContentSize().height));
 	setPositionX(getPositionX() - getContentSize().width/2);
 	return true;
 }
 
 void ItemFlagpoint::autoDropFlag(){
 	
-	this->runAction(CCMoveBy::create (1, ccp(0, -150)));
+	this->runAction(MoveBy::create (1, Vec2(0, -150)));
 }

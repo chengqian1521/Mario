@@ -1,8 +1,9 @@
 #include "ItemDarkCloud.h"
 
-ItemDarkCloud* ItemDarkCloud::create(CCDictionary* dict){
+ItemDarkCloud* ItemDarkCloud::create(ValueMap& map)
+{
 	ItemDarkCloud * pRet = new ItemDarkCloud();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -14,10 +15,11 @@ ItemDarkCloud* ItemDarkCloud::create(CCDictionary* dict){
 }
 
 
-bool ItemDarkCloud::init(CCDictionary* dict){
+bool ItemDarkCloud::init(ValueMap& map)
+{
 	Item::init();
-	m_type = Item::IT_MUSHROOM;
-	setPositionByProperty(dict);
+	_type = Item::IT_MushroomMonster;
+	setPositionByProperty(map);
 	setDisplayFrameWithAnimationName("mushroomMoving", 0);
 	return true;
 }

@@ -1,44 +1,46 @@
 #include "ItemTortoiseRound.h"
 #include "Mario.h"
-ItemTortoiseRound* ItemTortoiseRound::create(CCDictionary* dict){
+ItemTortoiseRound* ItemTortoiseRound::create(ValueMap& map)
+{
 	ItemTortoiseRound * pRet = new ItemTortoiseRound();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
 		delete pRet;
-		pRet = NULL;
+		pRet = nullptr;
 	}
 	return pRet;
 
 }
 
 
-bool ItemTortoiseRound::init(CCDictionary* dict){
-	Item::init();
-	m_type = Item::IT_tortoise_round;
-	setPositionByProperty(dict);
+bool ItemTortoiseRound::init(ValueMap& map)
+{
+	ItemCanMove::init();
+	_type = Item::IT_tortoise_round;
+	setPositionByProperty(map);
 	
-	m_roundDis = dict->valueForKey("roundDis")->intValue();
-	m_speedY = 0;
-	m_speedX = -50;
+	m_roundDis = map.at("roundDis").asInt();
+	_speedY = 0;
+	_speedX = -50;
 	m_state  = NORMAL;
-	m_bIsGodMode = false;
+	_bIsGodMode = false;
 	m_initXV = 50;
 	updateStatus();
 	return true;
 }
 
-void ItemTortoiseRound::move(float dt){
+void ItemTortoiseRound::moveCheck(float dt){
 	if (!isAppearInWindow())
 		return;
 	if (m_state == NORMAL){
 
 		static float dis = m_roundDis;
-		dis += dt*m_speedX;
-		setPositionX(getPositionX() + dt*m_speedX);
+		dis += dt*_speedX;
+		setPositionX(getPositionX() + dt*_speedX);
 		if (dis >= m_roundDis || dis <= 0){
-			m_speedX = -m_speedX;
+			_speedX = -_speedX;
 			updateStatus();
 		}
 	}
@@ -48,45 +50,45 @@ void ItemTortoiseRound::move(float dt){
 		}
 		if (canMoveDown(dt)){
 			moveDown(dt);
-			m_speedY -= sm_g;
+			_speedY -= ARG_GRAVITY;
 		}
 		else{
-			m_speedY = 0;
+			_speedY = 0;
 		}
 	}
 }
 void ItemTortoiseRound::collisionCheck(float dt){
-	CCLOG("%g,%g",getPositionX(),getPositionY());
+	
 	if (!isAppearInWindow())
 		return;
-	if (m_bIsGodMode)
+	if (_bIsGodMode)
 		return;
 	Mario* mario = Mario::getInstance();
-	CCRect rcMario = mario->boundingBox();
-	CCRect rcItem = this->boundingBox();
+	Rect rcMario = mario->getBoundingBox();
+	Rect rcItem = this->getBoundingBox();
 
 	if (rcMario.intersectsRect(rcItem)){
 
 		if (m_state == NORMAL){
 			if (mario->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
-				m_speedX = 0;
+				_speedX = 0;
 				m_state = SLEEP;
 				updateStatus();
 				//无敌一段时间
-				m_bIsGodMode = true;
+				_bIsGodMode = true;
 
 				//让马里奥弹出去
 				mario->jump(100);
 
-				scheduleOnce(schedule_selector(ItemTortoiseRound::cancelGodModeCallback), 0.2f);
+				scheduleOnce(CC_SCHEDULE_SELECTOR(ItemTortoiseRound::cancelGodModeCallback), 0.2f);
 
 				//过一段时间复活
-				scheduleOnce(schedule_selector(ItemTortoiseRound::autoReLiveCallback), 5.0f);
+				scheduleOnce(CC_SCHEDULE_SELECTOR(ItemTortoiseRound::autoReLiveCallback), 5.0f);
 
 			}
 			else{
 				//马里奥死亡
-				CCLOG("gama_over");
+				
 
 			}
 
@@ -95,34 +97,34 @@ void ItemTortoiseRound::collisionCheck(float dt){
 		}
 
 		if (m_state == SLEEP){
-			m_speedX = sm_mario->getPositionX() < getPositionX() ?
+			_speedX = Mario::getInstance()->getPositionX() < getPositionX() ?
 				-m_initXV * 3 : m_initXV * 3;
 			m_state = CRAZY;
 			//无敌一段时间
-			m_bIsGodMode = true;
-			scheduleOnce(schedule_selector(ItemTortoiseRound::cancelGodModeCallback), 0.2f);
+			_bIsGodMode = true;
+			scheduleOnce(CC_SCHEDULE_SELECTOR(ItemTortoiseRound::cancelGodModeCallback), 0.2f);
 			//scheduleOnce(schedule_selector(ItemTortoiseRound::autoReLiveCallback), 5.0f);
 
 			updateStatus();
 			return;
 		}
 		if (m_state == CRAZY){
-			if (Item::sm_mario->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
+			if (Mario::getInstance()->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
 				
-				m_speedX = 0;
+				_speedX = 0;
 				m_state = SLEEP;
 				//无敌一段时间
-				m_bIsGodMode = true;
-				scheduleOnce(schedule_selector(ItemTortoiseRound::cancelGodModeCallback), 0.2f);
+				_bIsGodMode = true;
+				scheduleOnce(CC_SCHEDULE_SELECTOR(ItemTortoiseRound::cancelGodModeCallback), 0.2f);
 
 				//过一段时间复活
-				scheduleOnce(schedule_selector(ItemTortoiseRound::autoReLiveCallback), 0.2f);
+				scheduleOnce(CC_SCHEDULE_SELECTOR(ItemTortoiseRound::autoReLiveCallback), 0.2f);
 
 			}
 			else{
-				if (sm_mario->isGodMode())
+				if (Mario::getInstance()->isGodMode())
 					return;
-				sm_mario->die();
+				Mario::getInstance()->die();
 
 			}
 
@@ -136,23 +138,23 @@ void ItemTortoiseRound::collisionCheck(float dt){
 void ItemTortoiseRound::updateStatus(){
 	stopAllActions();
 	if (m_state == NORMAL){
-		CCAnimation* ani = CCAnimationCache::sharedAnimationCache()->
-			animationByName(m_speedX>0 ? "tortoiseRightMoving" : "tortoiseLeftMoving");
-		runAction(CCRepeatForever::create(CCAnimate::create(ani)));
+		
+		runAction(RepeatForever::create(Animate::create(AnimationCache::getInstance()->
+														getAnimation(_speedX > 0 ? "tortoiseRightMoving" : "tortoiseLeftMoving"))));
 	}
 	else if (m_state == SLEEP || m_state==CRAZY){
-		CCAnimation* ani = CCAnimationCache::sharedAnimationCache()->
-			animationByName("tortoiseDead");
-		runAction(CCRepeatForever::create(CCAnimate::create(ani)));
+		
+		runAction(RepeatForever::create(Animate::create(AnimationCache::getInstance()->
+														getAnimation("tortoiseDead"))));
 
 	}
 }
 
 void ItemTortoiseRound::autoReLiveCallback(float dt){
 	m_state = NORMAL;
-	m_speedX = m_initXV;
+	_speedX = m_initXV;
 	updateStatus();
 }
 void ItemTortoiseRound::cancelGodModeCallback(float dt){
-	m_bIsGodMode = false;
+	_bIsGodMode = false;
 }

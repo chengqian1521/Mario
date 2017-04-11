@@ -6,8 +6,8 @@ class ItemFinalpoint :public Item
 {
 public:
 
-	static ItemFinalpoint* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
+	static ItemFinalpoint* create(ValueMap& map);
+	bool init(ValueMap& map);
 
 
 };

@@ -6,8 +6,8 @@ class ItemBullet :public Item
 {
 public:
 
-	static ItemBullet* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
+	static ItemBullet* create();
+	bool init();
 
 
 };

@@ -1,28 +1,30 @@
 #include "ItemTortoiseFly.h"
 #include "Mario.h"
-ItemTortoiseFly* ItemTortoiseFly::create(CCDictionary* dict){
+ItemTortoiseFly* ItemTortoiseFly::create(ValueMap& map)
+{
 	ItemTortoiseFly * pRet = new ItemTortoiseFly();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
 		delete pRet;
-		pRet = NULL;
+		pRet = nullptr;
 	}
 	return pRet;
 
 }
 
 
-bool ItemTortoiseFly::init(CCDictionary* dict){
-	Item::init();
-	m_type = Item::IT_tortoise_fly;
-	setPositionByProperty(dict);
+bool ItemTortoiseFly::init(ValueMap& map)
+{
+	ItemCanMove::init();
+	_type = Item::IT_tortoise_fly;
+	setPositionByProperty(map);
 	
-	m_flyDis = dict->valueForKey("flyDis")->intValue();
+	m_flyDis = map.at("flyDis").asInt();
 	m_status = NORMAL;
-	m_speedX = -50;
-	m_bIsGodMode = false;
+	_speedX = -50;
+	_isGodMode = false;
 	return true;
 }
 
@@ -30,19 +32,14 @@ void ItemTortoiseFly::updateStatus(){
 	
 	if (m_status == NORMAL){
 		stopAllActions();
-
-
-		
-		CCAnimation* animation1 = CCAnimationCache::sharedAnimationCache()->
-			animationByName(m_speedX > 0 ? "tortoiseFlyRight" : "tortoiseFlyLeft");
-
-		runAction(CCRepeatForever::create(CCAnimate::create(animation1)));
+		runAction(RepeatForever::create(Animate::create(AnimationCache::getInstance()->
+														getAnimation(_speedX > 0 ? "tortoiseFlyRight" : "tortoiseFlyLeft"))));
 
 	}
 
 }
 
-void ItemTortoiseFly::move(float dt){
+void ItemTortoiseFly::moveCheck(float dt){
 	if (m_status == NORMAL){
 		if (canMoveHorizontal(dt)){
 			moveHorizontal(dt);
@@ -55,7 +52,7 @@ void ItemTortoiseFly::move(float dt){
 			moveDown(dt);
 		}
 		else{
-			m_speedY = 0;
+			_speedY = 0;
 		}
 	}
 	else if (m_status == ONLAND||m_status==CRAZY){
@@ -67,7 +64,7 @@ void ItemTortoiseFly::move(float dt){
 			moveDown(dt);
 		}
 		else{
-			m_speedY = 0;
+			_speedY = 0;
 		}
 	
 	}
@@ -75,33 +72,33 @@ void ItemTortoiseFly::move(float dt){
 }
 void ItemTortoiseFly::collisionCheck(float dt){
 
-	CCRect rcItem = boundingBox();
-	CCRect rcMario = sm_mario->boundingBox();
+	Rect rcItem = getBoundingBox();
+	Rect rcMario = Mario::getInstance()->getBoundingBox();
 	if (rcItem.intersectsRect(rcMario)){
 		if (m_status == NORMAL){
-				if (Item::sm_mario->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
+				if (Mario::getInstance()->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
 					
-					m_speedX = 0;
+					_speedX = 0;
 					m_status = DROPPING;
 					updateStatus();
 					//无敌一段时间
 					beginGodMode(0.2f);
 
 					//让马里奥弹出去
-					sm_mario->jump(100);
+					Mario::getInstance()->jump(100);
 				}
 				else{
 					//马里奥死亡
-					sm_mario->die(false);
+					Mario::getInstance()->die(false);
 				}
 			}
 			else if (m_status == DROPPING){
 				//设计马里奥的下降的速度小于   乌龟的下降速度
 			}
 			else if (m_status == ONLAND){
-				if (Item::sm_mario->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
+				if (Mario::getInstance()->getSpeedY() <= 0 && rcMario.getMinY() > rcItem.getMaxY() - rcItem.size.height / 2){
 					
-					m_speedX = 0;
+					_speedX = 0;
 					m_status = SLEEP;
 					updateStatus();
 					//无敌一段时间
@@ -112,17 +109,17 @@ void ItemTortoiseFly::collisionCheck(float dt){
 					scheduleOnce(schedule_selector(ItemTortoiseFly::reLiveCallback), 5.0f);
 
 					//让马里奥弹出去
-					sm_mario->jump(100);
+					Mario::getInstance()->jump(100);
 
 				}
 				else{
 					//马里奥死亡
-					sm_mario->die(false);
+					Mario::getInstance()->die(false);
 				}
 			}
 
 			else if (m_status == SLEEP){
-				m_speedX = sm_mario->getPositionX() < getPositionX() ?
+				_speedX = Mario::getInstance()->getPositionX() < getPositionX() ?
 					150 :- 150;
 				m_status= CRAZY;
 
@@ -138,6 +135,6 @@ void ItemTortoiseFly::collisionCheck(float dt){
 void ItemTortoiseFly::reLiveCallback(float){
 
 	m_status = NORMAL;
-	m_speedX = 50;
+	_speedX = 50;
 	updateStatus();
 }

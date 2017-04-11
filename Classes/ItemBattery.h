@@ -1,13 +1,13 @@
 #ifndef __ItemBattery_H__
 #define __ItemBattery_H__
 #include "Common.h"
-#include "Item.h"
-class ItemBattery :public Item
+#include "ItemCanMove.h"
+class ItemBattery :public ItemCanMove
 {
 public:
 
-	static ItemBattery* create(CCDictionary* dict);
-	bool init(CCDictionary* dict);
+	static ItemBattery* create(ValueMap& map);
+	bool init(ValueMap& map);
 
 
 };

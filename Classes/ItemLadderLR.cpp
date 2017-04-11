@@ -1,8 +1,9 @@
 #include "ItemLadderLR.h"
 #include "Mario.h"
-ItemLadderLR* ItemLadderLR::create(CCDictionary* dict){
+ItemLadderLR* ItemLadderLR::create(ValueMap& map)
+{
 	ItemLadderLR * pRet = new ItemLadderLR();
-	if (pRet&&pRet->init(dict)){
+	if (pRet&&pRet->init(map)){
 		pRet->autorelease();
 	}
 	else{
@@ -14,47 +15,50 @@ ItemLadderLR* ItemLadderLR::create(CCDictionary* dict){
 }
 
 
-bool ItemLadderLR::init(CCDictionary* dict){
+bool ItemLadderLR::init(ValueMap& map)
+{
 	Item::init();
-	m_type = Item::IT_ladderLR;
+	_type = Item::IT_ladderLR;
 	m_dist = 0;
 	setPositionX(getPositionX() - 30);
-	setPositionByProperty(dict);
-	CCTexture2D* texture = CCTextureCache::sharedTextureCache()
-		->addImage("ladder.png");
+	setPositionByProperty(map);
+	Texture2D* texture =textureCache->addImage("ladder.png");
 	setTexture(texture);
-	setTextureRect(CCRectMake(0, 0, texture->getContentSize().width, texture->getContentSize().height));
+	setTextureRect(Rect(0, 0, texture->getContentSize().width, texture->getContentSize().height));
 
 	//一开始还是向右
-	m_lorR=dict->valueForKey("LorR")->intValue();
+	m_lorR=map.at("LorR").asInt();
 
 	//规定向右速度为正
-	m_speedX = m_lorR? 20:-20;
+	_speedX = m_lorR? 20:-20;
 	
 
 	//摆动幅度
-	m_ladderDis = dict->valueForKey("ladderDis")->intValue();
+	m_ladderDis = map.at("ladderDis").asInt();
 	m_dist = m_lorR ? 0 : m_ladderDis;
 	m_bIsMarioOnThis = false;
 	return true;
 }
-
-void ItemLadderLR::move(float dt){
-	m_dist += dt*m_speedX;
-	setPositionX(getPositionX() + dt*m_speedX);
+void ItemLadderLR::update(float dt){
+	collisionCheck( dt);
+	moveCheck(dt);
+}
+void ItemLadderLR::moveCheck(float dt){
+	m_dist += dt*_speedX;
+	setPositionX(getPositionX() + dt*_speedX);
 	
 	if (m_dist >= m_ladderDis || m_dist<=0){
-		m_speedX = -m_speedX;
+		_speedX = -_speedX;
 	}
 }
 void ItemLadderLR::collisionCheck(float dt){
-	CCRect rcMario = Mario::getInstance()->boundingBox();
-	CCRect rcLadder = boundingBox();
+	Rect rcMario = Mario::getInstance()->getBoundingBox();
+	Rect rcLadder = getBoundingBox();
 	if (rcMario.intersectsRect(rcLadder)){
 		m_bIsMarioOnThis = true;
 		if (Mario::getInstance()->isOnLadder()){
 			//跟着梯子一起动
-			Mario::getInstance()->setPositionX(Mario::getInstance()->getPositionX() + dt*m_speedX);
+			Mario::getInstance()->setPositionX(Mario::getInstance()->getPositionX() + dt*_speedX);
 		}
 		else{
 			if (Mario::getInstance()->isFly()){

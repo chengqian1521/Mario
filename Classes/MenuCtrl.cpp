@@ -1,19 +1,15 @@
+
 #include "MenuCtrl.h"
 
 
 bool MenuCtrl::init(){
-	CCMenu::init();
-
+	Menu::init();
 	scheduleUpdate();
-
 	return  true;
 }
 
 void MenuCtrl::update(float){
-	if (this->m_pSelectedItem&&this->m_eState == kCCMenuStateTrackingTouch){
-	//	CCLOG("activate");
-		m_pSelectedItem->activate();
-
+	if (this->_selectedItem&&this->_state == Menu::State::TRACKING_TOUCH){
+			_selectedItem->activate();
 	}
-
 }
