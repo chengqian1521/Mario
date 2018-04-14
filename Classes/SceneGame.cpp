@@ -154,6 +154,8 @@ void SceneGame::addMapObjectGroup(){
 					_mushrooms.push_back(item);
 				case Item::ItemType::IT_MUSHROOMREWARD:
 					_mushrooms.push_back(item);
+				default:
+					break;
 				}
 
 				_map->addChild(item);
@@ -339,6 +341,8 @@ void SceneGame::moveMarioCheck(float delta){
 	case common::NONE:
 		_menuShow->setTexture(_textureDirNone);
 		_mario->stop();
+		break;
+	default:
 		break;
 	}
 	//每个帧循环都去往上移动,竖直方向有速度则移动,没速度则静止

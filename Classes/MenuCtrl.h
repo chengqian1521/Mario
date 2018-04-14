@@ -7,7 +7,7 @@ class MenuCtrl:public Menu
 public:
 	CREATE_FUNC(MenuCtrl);
 	bool init();
-	void update(float);
+	virtual void update(float)override;
 };
 
 #endif

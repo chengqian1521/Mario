@@ -12,7 +12,6 @@ ItemMushroomMonster* ItemMushroomMonster::create(ValueMap& map)
 		pRet = nullptr;
 	}
 	return pRet;
-
 }
 
 
@@ -22,7 +21,6 @@ bool ItemMushroomMonster::init(ValueMap& map)
 	_type = Item::IT_MushroomMonster;
 	setPositionByProperty(map);
 	setDisplayFrameWithAnimationName("mushroomMoving", 0);
-
 
 	_speedY = 0;
 	_speedX = -40;
@@ -56,7 +54,7 @@ void ItemMushroomMonster::collisionCheck(float dt){
 			_speedX = 0;
 			this->_isDead = true;
 			
-			this->runAction(CCMoveBy::create(1, ccp(0, -winSize.height)));
+			this->runAction(MoveBy::create(1, Vec2(0, -winSize.height)));
 		}
 		else{
 			//ÂíÀï°ÂËÀÍö

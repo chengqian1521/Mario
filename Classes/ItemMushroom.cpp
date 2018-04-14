@@ -38,9 +38,9 @@ void ItemMushroom::wakeup(){
 
 void ItemMushroom::updateStatus(){
 	if (_state == GROW){
-		MoveBy* by = MoveBy::create(1.0f, ccp(0, 16));
-		CallFunc* callfunc = CallFunc::create(this, CC_CALLFUNC_SELECTOR(ItemMushroom::afterGrowCallback));
-		runAction(CCSequence::create(by,callfunc,NULL));
+		MoveBy* by = MoveBy::create(1.0f, Vec2(0, 16));
+		CallFunc* callfunc = CallFunc::create(std::bind(&ItemMushroom::afterGrowCallback,this));
+		runAction(Sequence::create(by,callfunc,NULL));
 	}
 	else if (_state == MOVE){
 		

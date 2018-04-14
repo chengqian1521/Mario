@@ -51,7 +51,7 @@ void ItemFireString::collisionCheck(float dt){
 	};
 	Line fireString;
 
-	CCRect rcItem = boundingBox();
+	Rect rcItem = boundingBox();
 
 	int angle = getRotation();
 	angle %= 360;

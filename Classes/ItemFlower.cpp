@@ -33,8 +33,10 @@ bool ItemFlower::init(ValueMap& map)
 	setLocalZOrder(0);
 	setPositionX(getPositionX() - 8);
 
-	this->runAction(CCRepeatForever::create(
-		CCAnimate::create(CCAnimationCache::sharedAnimationCache()->animationByName("flowerShow"))));
+
+
+	this->runAction(RepeatForever::create(
+		Animate::create(AnimationCache::getInstance()->getAnimation(ANI_flowerShow))));
 
 
 	//更新显示
@@ -67,10 +69,10 @@ void ItemFlower::moveCheck(float dt){
 	float targetY = getPositionY() + dt*_speedY;
 	if (_speedY > 0){
 		//正在上升
-		CCRect rc =this->boundingBox();
-		CCRect rcWill = rc;
+		Rect rc =this->boundingBox();
+		Rect rcWill = rc;
 		rcWill.origin.y += dt*_speedY;
-		CCPoint ptMario = Mario::getInstance()->getPosition();
+		Vec2 ptMario = Mario::getInstance()->getPosition();
 		//CCLOG("ptMario.y=%g,m_yTop=%g", ptMario.y, m_yTop);
 		if (!Mario::getInstance()->isFly()&&rcWill.intersectsRect(Mario::getInstance()->boundingBox())){
 			targetY = m_yButtom;
@@ -103,8 +105,8 @@ void ItemFlower::collisionCheck(float dt){
 		return;
 
 	//碰撞检测
-	CCRect rcItem = this->boundingBox();
-	CCRect rcMario = mario->boundingBox();
+	Rect rcItem = this->getBoundingBox();
+	Rect rcMario = mario->getBoundingBox();
 	if (rcItem.intersectsRect(rcMario)){
 		//CCLOG("2");
 		mario->die();

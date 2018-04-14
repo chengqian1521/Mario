@@ -30,7 +30,8 @@ bool ItemTortoise::init(ValueMap& map)
 	m_bIsDead = false;
 	_isGodMode = false;
 	m_state = NORMAL;
-	this->runAction(RepeatForever::create(CCAnimate::create(CCAnimationCache::sharedAnimationCache()->animationByName("tortoiseLeftMoving"))));
+
+	this->runAction(RepeatForever::create(Animate::create(AnimationCache::getInstance()->getAnimation(ANI_tortoiseLeftMoving))));
 	return true;
 }
 void ItemTortoise::moveCheck(float dt){

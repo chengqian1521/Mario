@@ -20,8 +20,8 @@ private:
 
 	int					_loadFileCount = 0;
 	int					_allFineNum;
-	std::vector<char*>	_picfiles;
-	std::vector<char*>  _musicfiles;
+	std::vector<const char*>	_picfiles;
+	std::vector<const char*>  _musicfiles;
 };
 
 #endif

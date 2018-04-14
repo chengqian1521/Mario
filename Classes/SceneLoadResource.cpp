@@ -67,7 +67,7 @@ void SceneLoadResource::onEnter() {
 
 void SceneLoadResource::copyResourceFileNameToClassMember(){
 	
-	char* picFileNames[] = {
+	const char* picFileNames[] = {
 		IMAGE_about_normal,
 		IMAGE_about_select,
 		IMAGE_AB_normal,
@@ -176,7 +176,7 @@ void SceneLoadResource::copyResourceFileNameToClassMember(){
 		IMAGE_WalkRight_fire
 	};
 
-	char* musicfiles[] = {
+	const char* musicfiles[] = {
 		SOUND_achievement,
 		SOUND_big_spaceship_flying,
 		SOUND_bullet,

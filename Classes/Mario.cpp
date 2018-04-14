@@ -104,7 +104,7 @@ void Mario::updateStatus(){
 
 	this->stopAllActions();
 	if (_isAutoRunning){
-		char *name = nullptr;
+		const char *name = nullptr;
 		switch (_state)
 		{
 		case Mario::Small:
@@ -538,7 +538,6 @@ void Mario::autoRun(){
 	updateStatus();
 	_speed.y = 0;
 
-	
 
 	//自动向前走
 	scheduleOnce(CC_SCHEDULE_SELECTOR(Mario::beginAutoMoveRightCallback), 1.5f);
